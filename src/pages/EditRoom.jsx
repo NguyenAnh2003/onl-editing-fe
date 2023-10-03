@@ -14,31 +14,38 @@ const EditRoom = () => {
   const socketRef = useRef(null);
   const location = useLocation();
   const [clients, setClients] = useState([]);
-  console.log(roomId);
+  console.log('Room ID', roomId);
 
   useEffect(() => {
     const init = async () => {
       /**
        *
        */
-      
+
       socketRef.current = await initSocket();
       socketRef.current.emit(ACTIONS.JOIN, {
         roomId,
         name: location.state?.name,
       });
-    };
 
-    /**
-     * Listenning for joining people
-     */
-    socketRef.current.on(
-      ACTIONS.JOINED,
-      ({clients, name, socketId}) => {
-        
-      }
-    )
+      /**
+       * Listenning for joining people
+       */
+      socketRef.current.on(
+        ACTIONS.JOINED,
+        ({ clients, name, socketId }) => {
+          if (name !== location.state?.name) {
+            console.log(`Success joined: ${name}`);
+          }
+          console.log('clients', clients);
+          setClients(clients);
+        }
+      );
+    };
     init();
+    return () => {
+      socketRef.current.disconnect();
+    };
   }, []);
 
   const copyRoomIDHandler = (roomId) => {
