@@ -2,8 +2,8 @@ const ACTIONS = {
   JOIN: 'join',
   JOINED: 'joined',
   DISCONNECTED: 'disconnected',
-  CODE_CHANGE: 'text-change',
-  SYNC_CODE: 'sync-text',
+  TEXT_CHANGE: 'text-change',
+  SYNC_TEXT: 'sync-text',
   LEAVE: 'leave',
 };
 

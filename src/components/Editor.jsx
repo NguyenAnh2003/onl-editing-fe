@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
@@ -42,6 +42,7 @@ const formats = [
 
 const Editor = () => {
   const [value, setValue] = useState('');
+  const editorRef = useRef(null);
   return (
     <ReactQuill
       theme="snow"

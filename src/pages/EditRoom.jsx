@@ -21,7 +21,6 @@ const EditRoom = () => {
       /**
        *
        */
-
       socketRef.current = await initSocket();
       socketRef.current.emit(ACTIONS.JOIN, {
         roomId,
@@ -34,17 +33,39 @@ const EditRoom = () => {
       socketRef.current.on(
         ACTIONS.JOINED,
         ({ clients, name, socketId }) => {
-          if (name !== location.state?.name) {
-            console.log(`Success joined: ${name}`);
-          }
+          // if (name === location.state?.name) {
+          //   console.log(`Success joined: ${name}`);
+          // }
+          console.log(`username: ${name}`);
           console.log('clients', clients);
           setClients(clients);
         }
       );
+
+      /**
+       * disconnect
+       */
+      socketRef.current.on(
+        ACTIONS.DISCONNECTED,
+        ({ socketId, name }) => {
+          console.log(`${name} left room`);
+          setClients((prev) => {
+            return prev.filter(
+              (client) => client.socketId !== socketId
+            );
+          });
+        }
+      );
     };
+
+    /** init */
     init();
+
+    /** remove */
     return () => {
       socketRef.current.disconnect();
+      socketRef.current.off(ACTIONS.JOINED);
+      socketRef.current.off(ACTIONS.DISCONNECTED);
     };
   }, []);
 
