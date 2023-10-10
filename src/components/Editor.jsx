@@ -32,9 +32,9 @@ const Editor = ({ socketRef, roomId, client }) => {
     /** */
   }, [socketRef?.current, text]);
 
-  const onChangeHandler = async (text, delta) => {
+  const onChangeHandler = (text, delta) => {
     // console.log({ text, delta });
-    await socketRef.current.emit(ACTIONS.TEXT_CHANGE, {
+    socketRef.current.emit(ACTIONS.TEXT_CHANGE, {
       roomId,
       text,
       client,
