@@ -8,6 +8,7 @@ import UserCard from '../components/UserCard';
 import Editor from '../components/Editor';
 import { initSocket } from '../socket';
 import ACTIONS from '../actions';
+import TestEditor from '../components/TestEditor';
 
 const EditRoom = () => {
   const { roomId } = useParams();
@@ -99,7 +100,7 @@ const EditRoom = () => {
           Leave
         </button>
       </div>
-      <Editor
+      <TestEditor
         socketRef={socketRef}
         roomId={roomId}
         client={location.state?.name}

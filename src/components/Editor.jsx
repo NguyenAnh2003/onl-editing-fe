@@ -4,6 +4,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from 'react';
 import ReactQuill from 'react-quill';
+import Quill from 'quill';
 import 'react-quill/dist/quill.snow.css';
 import { formats, module } from '../config/QuillConfig';
 import ACTIONS from '../actions';
@@ -14,7 +15,7 @@ const Editor = ({ socketRef, roomId, client }) => {
   /** fetch text with event change */
   useEffect(() => {
     if (socketRef?.current) {
-      socketRef?.current.on(
+      socketRef && socketRef?.current.on(
         ACTIONS.TEXT_CHANGE,
         ({ roomId, text, client }) => {
           if (
@@ -30,11 +31,14 @@ const Editor = ({ socketRef, roomId, client }) => {
       );
     }
     /** */
+    return () => {
+      socketRef.current.off(ACTIONS.TEXT_CHANGE);
+    }
   }, [socketRef?.current, text]);
 
   const onChangeHandler = (text, delta) => {
-    // console.log({ text, delta });
-    socketRef.current.emit(ACTIONS.TEXT_CHANGE, {
+    console.log({ text, delta });
+    socketRef && socketRef.current.emit(ACTIONS.TEXT_CHANGE, {
       roomId,
       text,
       client,
@@ -49,6 +53,7 @@ const Editor = ({ socketRef, roomId, client }) => {
         onChange={onChangeHandler}
         modules={module}
         formats={formats}
+        preserveWhitespace
       />
     </>
   );
