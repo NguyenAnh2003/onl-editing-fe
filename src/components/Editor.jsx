@@ -9,8 +9,8 @@ import { formats, module } from '../config/QuillConfig';
 import ACTIONS from '../actions';
 
 const Editor = ({ socketRef, roomId, client }) => {
-  const [val, setVal] = useState("");
   const editorRef = useRef(null);
+  const [text, setText] = useState(null);
   /** fetch text with event change */
   useEffect(() => {
     if (socketRef?.current) {
@@ -23,15 +23,16 @@ const Editor = ({ socketRef, roomId, client }) => {
             client !== null
           ) {
             console.log({ roomId, text, client });
-            editorRef.current = text;
+            /** set text on quill */
+            setText(text);
           }
         }
       );
     }
     /** */
-  }, [socketRef?.current]);
+  }, [socketRef?.current, text]);
 
-  const onChangeQuill = (text, delta) => {
+  const onChangeHandler = (text, delta) => {
     // console.log({ text, delta });
     socketRef.current.emit(ACTIONS.TEXT_CHANGE, {
       roomId,
@@ -43,9 +44,8 @@ const Editor = ({ socketRef, roomId, client }) => {
   return (
     <ReactQuill
       theme="snow"
-      ref={editorRef}
-      value={val}
-      onChange={onChangeQuill}
+      value={text}
+      onChange={onChangeHandler}
       modules={module}
       formats={formats}
     />
