@@ -99,7 +99,11 @@ const EditRoom = () => {
           Leave
         </button>
       </div>
-      <Editor />
+      <Editor
+        socketRef={socketRef}
+        roomId={roomId}
+        client={location.state?.name}
+      />
     </div>
   );
 };
