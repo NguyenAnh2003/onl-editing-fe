@@ -38,14 +38,7 @@ const TestEditor = React.memo(
 
       quill && quill.on('text-change', handleChange);
 
-      return () => {
-        quill && quill.off('text-change', handleChange);
-      };
-    }, [quill, socketRef, client]);
-
-    useEffect(() => {
-      if (!socketRef.current || !quill) return;
-      const handleChange = (delta) => {
+      const handleEmit = (delta) => {
         quill && quill.updateContents(delta);
       };
 
@@ -58,18 +51,16 @@ const TestEditor = React.memo(
               delta,
               senderClient,
             });
-            if(senderClient !== client) {
-            handleChange(delta);
+            /** Avoid feedback loop */
+            if (senderClient !== client) {
+              handleEmit(delta);
             }
           }
         );
 
       return () => {
-        socketRef &&
-          socketRef.current.off(
-            ACTIONS.TEXT_CHANGE,
-            handleChange
-          );
+        quill && quill.off('text-change', handleChange);
+        socketRef.current.off(ACTIONS.TEXT_CHANGE, handleEmit)
       };
     }, [quill, socketRef, client]);
 
