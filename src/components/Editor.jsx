@@ -32,9 +32,9 @@ const Editor = ({ socketRef, roomId, client }) => {
     /** */
   }, [socketRef?.current, text]);
 
-  const onChangeHandler = (text, delta) => {
+  const onChangeHandler = async (text, delta) => {
     // console.log({ text, delta });
-    socketRef.current.emit(ACTIONS.TEXT_CHANGE, {
+    await socketRef.current.emit(ACTIONS.TEXT_CHANGE, {
       roomId,
       text,
       client,
@@ -42,13 +42,15 @@ const Editor = ({ socketRef, roomId, client }) => {
   };
 
   return (
-    <ReactQuill
-      theme="snow"
-      value={text}
-      onChange={onChangeHandler}
-      modules={module}
-      formats={formats}
-    />
+    <>
+      <ReactQuill
+        theme="snow"
+        value={text}
+        onChange={onChangeHandler}
+        modules={module}
+        formats={formats}
+      />
+    </>
   );
 };
 
