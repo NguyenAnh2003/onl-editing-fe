@@ -39,7 +39,14 @@ const EditRoom = () => {
           // }
           console.log(`username: ${name}`);
           console.log('clients', clients);
+          console.log(`socketId: ${socketId}`);
           setClients(clients);
+
+          /** Sync data */
+          socketRef.current.emit(ACTIONS.SYNC_TEXT, {
+            socketId, 
+            delta
+          })
         }
       );
 
