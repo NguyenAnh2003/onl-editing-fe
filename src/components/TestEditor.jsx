@@ -9,7 +9,7 @@ import { toolbarOptions } from '../config/QuillConfig';
 import ACTIONS from '../actions';
 
 const TestEditor = React.memo(
-  ({ socketRef, roomId, client }) => {
+  ({ socketRef, roomId, client, setDelta }) => {
     const [quill, setQuill] = useState(null);
 
     /** setup Quill */
@@ -26,8 +26,12 @@ const TestEditor = React.memo(
       if (!socketRef.current || !quill) return;
 
       const handleChange = (delta, oldData, src) => {
-        console.log('Emit data', delta);
         if (src !== 'user') return;
+
+        /** */
+        setDelta(delta)
+
+        /** */
         socketRef &&
           socketRef.current.emit(ACTIONS.TEXT_CHANGE, {
             roomId,
@@ -62,7 +66,7 @@ const TestEditor = React.memo(
         quill && quill.off('text-change', handleChange);
         socketRef.current.off(ACTIONS.TEXT_CHANGE, handleEmit)
       };
-    }, [quill, socketRef, client]);
+    }, [quill, socketRef, client, setDelta]);
 
     return (
       <div>

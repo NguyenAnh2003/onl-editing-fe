@@ -15,7 +15,7 @@ const EditRoom = () => {
   const socketRef = useRef(null);
   const location = useLocation();
   const [clients, setClients] = useState([]);
-  console.log('Room ID', roomId);
+  const [delta, setDelta] = useState({});
 
   useEffect(() => {
     const init = async () => {
@@ -70,6 +70,10 @@ const EditRoom = () => {
     };
   }, []);
 
+  useEffect(() => {
+    console.log("Delta", delta);
+  }, [delta])
+
   const copyRoomIDHandler = (roomId) => {
     navigator.clipboard.writeText(roomId);
   };
@@ -104,6 +108,7 @@ const EditRoom = () => {
         socketRef={socketRef}
         roomId={roomId}
         client={location.state?.name}
+        setDelta={setDelta}
       />
     </div>
   );
