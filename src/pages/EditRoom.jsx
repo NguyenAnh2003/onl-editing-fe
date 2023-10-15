@@ -48,10 +48,11 @@ const EditRoom = () => {
           console.log('delta checking', delta);
 
           /** Sync data */
-          socketRef.current.emit(ACTIONS.SYNC_TEXT, {
-            socketId,
-            delta,
-          });
+          // socketRef.current.emit(ACTIONS.SYNC_TEXT, {
+          //   socketId,
+          //   delta,
+          //   client: name,
+          // });
         }
       );
 

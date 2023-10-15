@@ -29,8 +29,8 @@ const TestEditor = React.memo(
         if (src !== 'user') return;
 
         /** */
-        setDelta(quill.getContents());
-        // console.log('delta component', delta);
+        // setDelta(quill.getContents());
+        console.log('delta component', delta);
 
         /** */
         socketRef &&
@@ -49,27 +49,19 @@ const TestEditor = React.memo(
         quill && quill.updateContents(delta);
       };
 
-      // /** sync data? */
-      // socketRef &&
-      //   socketRef.current.on(
-      //     ACTIONS.SYNC_TEXT,
-      //     ({ delta, socketId }) =>
-      //       console.log('sync', { socketId, delta })
-      //   );
-
       /** fetching data when text change */
       socketRef &&
         socketRef.current.on(
           ACTIONS.TEXT_CHANGE,
-          ({ delta }) => {
+          ({ delta, client: senderClient }) => {
             console.log({
               delta,
-              // senderClient,
+              senderClient,
             });
             /** Avoid feedback loop */
-            // if (senderClient !== client) {
+            if (senderClient !== client) {
               handleEmit(delta);
-            // }
+            }
           }
         );
 
