@@ -22,14 +22,15 @@ const TestEditor = React.memo(
     }, []);
 
     useEffect(() => {
-      //
+      /** set up data onChange */
       if (!socketRef.current || !quill) return;
 
       const handleChange = (delta, oldData, src) => {
         if (src !== 'user') return;
 
         /** */
-        setDelta(delta)
+        setDelta(quill.getContents());
+        // console.log('delta component', delta);
 
         /** */
         socketRef &&
@@ -42,29 +43,42 @@ const TestEditor = React.memo(
 
       quill && quill.on('text-change', handleChange);
 
+      /** setup update delta */
+
       const handleEmit = (delta) => {
         quill && quill.updateContents(delta);
       };
 
+      // /** sync data? */
+      // socketRef &&
+      //   socketRef.current.on(
+      //     ACTIONS.SYNC_TEXT,
+      //     ({ delta, socketId }) =>
+      //       console.log('sync', { socketId, delta })
+      //   );
+
+      /** fetching data when text change */
       socketRef &&
         socketRef.current.on(
           ACTIONS.TEXT_CHANGE,
-          ({ roomId, delta, client: senderClient }) => {
+          ({ delta }) => {
             console.log({
-              roomId,
               delta,
-              senderClient,
+              // senderClient,
             });
             /** Avoid feedback loop */
-            if (senderClient !== client) {
+            // if (senderClient !== client) {
               handleEmit(delta);
-            }
+            // }
           }
         );
 
       return () => {
         quill && quill.off('text-change', handleChange);
-        socketRef.current.off(ACTIONS.TEXT_CHANGE, handleEmit)
+        socketRef.current.off(
+          ACTIONS.TEXT_CHANGE,
+          handleEmit
+        );
       };
     }, [quill, socketRef, client, setDelta]);
 

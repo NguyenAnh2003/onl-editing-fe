@@ -42,11 +42,16 @@ const EditRoom = () => {
           console.log(`socketId: ${socketId}`);
           setClients(clients);
 
+          /**
+           * Delta checking
+           */
+          console.log('delta checking', delta);
+
           /** Sync data */
           socketRef.current.emit(ACTIONS.SYNC_TEXT, {
-            socketId, 
-            delta
-          })
+            socketId,
+            delta,
+          });
         }
       );
 
@@ -75,11 +80,7 @@ const EditRoom = () => {
       socketRef.current.off(ACTIONS.JOINED);
       socketRef.current.off(ACTIONS.DISCONNECTED);
     };
-  }, []);
-
-  useEffect(() => {
-    console.log("Delta", delta);
-  }, [delta])
+  }, [delta]);
 
   const copyRoomIDHandler = (roomId) => {
     navigator.clipboard.writeText(roomId);
