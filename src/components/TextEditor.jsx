@@ -5,11 +5,14 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
 import Quill from 'quill';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+
 import { toolbarOptions } from '../config/QuillConfig';
 import ACTIONS from '../actions';
 
 const TextEditor = React.memo(
-  ({ socketRef, roomId, client, onContentChange }) => {
+  ({ socketRef, roomId, client}) => {
     const [quill, setQuill] = useState(null);
     /** setup Quill */
     useEffect(() => {
@@ -28,7 +31,6 @@ const TextEditor = React.memo(
         if (src !== 'user' || src == 'api') return;
 
         /** */
-        onContentChange(content);
         console.log('content component', content);
 
         /** */
