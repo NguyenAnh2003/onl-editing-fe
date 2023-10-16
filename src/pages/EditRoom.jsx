@@ -8,14 +8,14 @@ import UserCard from '../components/UserCard';
 import Editor from '../components/Editor';
 import { initSocket } from '../socket';
 import ACTIONS from '../actions';
-import TestEditor from '../components/TestEditor';
+import TextEditor from '../components/TextEditor';
 
 const EditRoom = () => {
   const { roomId } = useParams();
   const socketRef = useRef(null);
   const location = useLocation();
   const [clients, setClients] = useState([]);
-  const [delta, setDelta] = useState({});
+  const textRef = useRef(null);
 
   useEffect(() => {
     const init = async () => {
@@ -43,16 +43,18 @@ const EditRoom = () => {
           setClients(clients);
 
           /**
-           * Delta checking
+           * content checking
            */
-          console.log('delta checking', delta);
+          console.log('content checking', textRef.current);
 
           /** Sync data */
-          // socketRef.current.emit(ACTIONS.SYNC_TEXT, {
-          //   socketId,
-          //   delta,
-          //   client: name,
-          // });
+          if (textRef.current) {
+            socketRef.current.emit(ACTIONS.SYNC_TEXT, {
+              socketId,
+              content: textRef.current,
+              client: name,
+            });
+          }
         }
       );
 
@@ -81,7 +83,7 @@ const EditRoom = () => {
       socketRef.current.off(ACTIONS.JOINED);
       socketRef.current.off(ACTIONS.DISCONNECTED);
     };
-  }, [delta]);
+  }, [textRef.current]);
 
   const copyRoomIDHandler = (roomId) => {
     navigator.clipboard.writeText(roomId);
@@ -113,11 +115,11 @@ const EditRoom = () => {
           Leave
         </button>
       </div>
-      <TestEditor
+      <TextEditor
         socketRef={socketRef}
         roomId={roomId}
         client={location.state?.name}
-        setDelta={setDelta}
+        onContentChange={(e) => {textRef.current = e}}
       />
     </div>
   );

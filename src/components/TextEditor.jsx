@@ -8,8 +8,8 @@ import Quill from 'quill';
 import { toolbarOptions } from '../config/QuillConfig';
 import ACTIONS from '../actions';
 
-const TestEditor = React.memo(
-  ({ socketRef, roomId, client, setDelta }) => {
+const TextEditor = React.memo(
+  ({ socketRef, roomId, client, onContentChange }) => {
     const [quill, setQuill] = useState(null);
 
     /** setup Quill */
@@ -25,42 +25,44 @@ const TestEditor = React.memo(
       /** set up data onChange */
       if (!socketRef.current || !quill) return;
 
-      const handleChange = (delta, oldData, src) => {
+      const handleChange = (content, oldData, src) => {
         if (src !== 'user') return;
 
         /** */
-        // setDelta(quill.getContents());
-        console.log('delta component', delta);
+        onContentChange();
+
+        console.log('content component', content);
 
         /** */
         socketRef &&
           socketRef.current.emit(ACTIONS.TEXT_CHANGE, {
             roomId,
-            delta,
+            content,
             client,
           });
       };
 
       quill && quill.on('text-change', handleChange);
 
-      /** setup update delta */
+      /** setup update content */
 
-      const handleEmit = (delta) => {
-        quill && quill.updateContents(delta);
+      const handleEmit = (content) => {
+        quill && quill.updateContents(content);
       };
 
       /** fetching data when text change */
       socketRef &&
         socketRef.current.on(
           ACTIONS.TEXT_CHANGE,
-          ({ delta, client: senderClient }) => {
-            console.log({
-              delta,
-              senderClient,
-            });
+          ({ content, client: senderClient }) => {
+            console.log(
+              content
+                ? { content, senderClient }
+                : 'null content'
+            );
             /** Avoid feedback loop */
-            if (senderClient !== client) {
-              handleEmit(delta);
+            if (content && senderClient !== client) {
+              handleEmit(content);
             }
           }
         );
@@ -72,7 +74,7 @@ const TestEditor = React.memo(
           handleEmit
         );
       };
-    }, [quill, socketRef, client, setDelta]);
+    }, [quill, socketRef, client]);
 
     return (
       <div>
@@ -85,4 +87,4 @@ const TestEditor = React.memo(
   }
 );
 
-export default TestEditor;
+export default TextEditor;

@@ -4,9 +4,7 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useRef, useState } from 'react';
 import ReactQuill from 'react-quill';
-import Quill from 'quill';
 import 'react-quill/dist/quill.snow.css';
-import { formats, module } from '../config/QuillConfig';
 import ACTIONS from '../actions';
 
 const Editor = ({ socketRef, roomId, client }) => {
