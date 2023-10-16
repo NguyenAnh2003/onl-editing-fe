@@ -37,10 +37,6 @@ const EditRoom = () => {
           // if (name === location.state?.name) {
           //   console.log(`Success joined: ${name}`);
           // }
-          console.log(`username: ${name}`);
-          console.log('clients', clients);
-          console.log(`socketId: ${socketId}`);
-          setClients(clients);
 
           /**
            * content checking
@@ -53,8 +49,14 @@ const EditRoom = () => {
               socketId,
               content: textRef.current,
               client: name,
+              roomId,
             });
           }
+
+          console.log(`username: ${name}`);
+          console.log('clients', clients);
+          console.log(`socketId: ${socketId}`);
+          setClients(clients);
         }
       );
 
@@ -119,7 +121,9 @@ const EditRoom = () => {
         socketRef={socketRef}
         roomId={roomId}
         client={location.state?.name}
-        onContentChange={(e) => {textRef.current = e}}
+        onContentChange={(e) => {
+          textRef.current = e;
+        }}
       />
     </div>
   );

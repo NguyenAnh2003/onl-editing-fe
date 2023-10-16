@@ -11,7 +11,6 @@ import ACTIONS from '../actions';
 const TextEditor = React.memo(
   ({ socketRef, roomId, client, onContentChange }) => {
     const [quill, setQuill] = useState(null);
-
     /** setup Quill */
     useEffect(() => {
       const quillObject = new Quill('#main-container', {
@@ -26,11 +25,10 @@ const TextEditor = React.memo(
       if (!socketRef.current || !quill) return;
 
       const handleChange = (content, oldData, src) => {
-        if (src !== 'user') return;
+        if (src !== 'user' || src == 'api') return;
 
         /** */
-        onContentChange();
-
+        onContentChange(content);
         console.log('content component', content);
 
         /** */
