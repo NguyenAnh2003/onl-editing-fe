@@ -27,3 +27,7 @@ The issue you're encountering, where the delta (text change) events are continuo
 When you receive a TEXT_CHANGE event from the server, you emit it back to all connected clients in the same room, including the client that sent the original change. This results in a feedback loop because each client receives its own event and keeps emitting it.
 
 When you make a local change in your quill editor, you also emit a TEXT_CHANGE event to the server, which is then broadcasted to all clients, including the client that initiated the change. This local change triggers additional events.
+
+
+### Quill js image saved in based64 solution
+https://www.youtube.com/watch?v=tR9a9rwfruM

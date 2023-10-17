@@ -7,8 +7,7 @@ import React, { useEffect, useState } from 'react';
 import Quill from 'quill';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-
-import { toolbarOptions } from '../config/QuillConfig';
+import { toolbarOptions } from '../config/quill.config';
 import ACTIONS from '../actions';
 
 const TextEditor = React.memo(({ socketRef, roomId, client }) => {
