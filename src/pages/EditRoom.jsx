@@ -30,34 +30,25 @@ const EditRoom = () => {
       /**
        * Listenning for joining people
        */
-      socketRef.current.on(
-        ACTIONS.JOINED,
-        ({ clients, name, socketId }) => {
-          // if (name === location.state?.name) {
-          //   console.log(`Success joined: ${name}`);
-          // }
-
-          console.log(`username: ${name}`);
-          console.log('clients', clients);
-          console.log(`socketId: ${socketId}`);
-          setClients(clients);
-        }
-      );
+      socketRef.current.on(ACTIONS.JOINED, ({ clients, name, socketId }) => {
+        // if (name === location.state?.name) {
+        //   console.log(`Success joined: ${name}`);
+        // }
+        console.log(`username: ${name}`);
+        console.log('clients', clients);
+        console.log(`socketId: ${socketId}`);
+        setClients(clients);
+      });
 
       /**
        * disconnect
        */
-      socketRef.current.on(
-        ACTIONS.DISCONNECTED,
-        ({ socketId, name }) => {
-          console.log(`${name} left room`);
-          setClients((prev) => {
-            return prev.filter(
-              (client) => client.socketId !== socketId
-            );
-          });
-        }
-      );
+      socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, name }) => {
+        console.log(`${name} left room`);
+        setClients((prev) => {
+          return prev.filter((client) => client.socketId !== socketId);
+        });
+      });
     };
 
     /** init */
@@ -85,27 +76,16 @@ const EditRoom = () => {
         ))}
       </>
       <div>
-        <button
-          type="button"
-          onClick={copyRoomIDHandler(roomId)}
-          className="hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-base font-semibold text-white outline-none"
-        >
+        <button type="button" onClick={copyRoomIDHandler(roomId)} className="hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-base font-semibold text-white outline-none">
           Coppy room ID
         </button>
       </div>
       <div>
-        <button
-          type="button"
-          className="mt-10 mb-10 hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-base font-semibold text-white outline-none"
-        >
+        <button type="button" className="mt-10 mb-10 hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-base font-semibold text-white outline-none">
           Leave
         </button>
       </div>
-      <TextEditor
-        socketRef={socketRef}
-        roomId={roomId}
-        client={location.state?.name}
-      />
+      <TextEditor socketRef={socketRef} roomId={roomId} client={location.state?.name} />
     </div>
   );
 };

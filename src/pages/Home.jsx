@@ -28,10 +28,7 @@ const Home = () => {
         <div className="mx-auto w-full max-w-[550px]">
           <form onSubmit={joinRoomHandler}>
             <div className="mb-5">
-              <label
-                htmlFor="text"
-                className="mb-3 block text-base font-medium text-[#07074D]"
-              >
+              <label htmlFor="text" className="mb-3 block text-base font-medium text-[#07074D]">
                 RoomID
               </label>
               <input
@@ -43,10 +40,7 @@ const Home = () => {
               />
             </div>
             <div className="mb-5">
-              <label
-                htmlFor="email"
-                className="mb-3 block text-base font-medium text-[#07074D]"
-              >
+              <label htmlFor="email" className="mb-3 block text-base font-medium text-[#07074D]">
                 Your name
               </label>
               <input
@@ -60,20 +54,13 @@ const Home = () => {
             </div>
 
             <div>
-              <button
-                type="submit"
-                className="hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-base font-semibold text-white outline-none"
-              >
+              <button type="submit" className="hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-base font-semibold text-white outline-none">
                 Join
               </button>
             </div>
           </form>
           <div>
-            <button
-              type="button"
-              onClick={createNewRoom}
-              className="underline text-xl"
-            >
+            <button type="button" onClick={createNewRoom} className="underline text-xl">
               New Room
             </button>
           </div>
