@@ -67,26 +67,30 @@ const TextEditor = React.memo(({ socketRef, roomId, client }) => {
         }
       });
 
+    return () => {
+      quill && quill.off('text-change', handleChange);
+      /** socket off */
+      socketRef.current.off(ACTIONS.TEXT_CHANGE, handleEmit);
+    };
+  }, [quill, socketRef, client]);
+
+  /** rerender when text change - save text */
+  useEffect(() => {
+    if (!quill) return;
     /**
      * auto save document
      * then fetch all data in document object
      * Each changes will send to server and update in DB
      */
-    // const interval = setInterval(() => {
-    //   socketRef.current.emit(
-    //     ACTIONS.SAVE_TEXT,
-    //     quill.getContents()
-    //   );
-    // }, 2000);
+
+    const interval = setInterval(() => {
+      socketRef.current.emit(ACTIONS.SAVE_TEXT, { roomId, content: quill.getContents() });
+    }, 100);
 
     return () => {
-      quill && quill.off('text-change', handleChange);
-      /** socket off */
-      socketRef.current.off(ACTIONS.TEXT_CHANGE, handleEmit);
-      /** clear interval? */
-      // clearInterval(interval);
+      clearInterval(interval);
     };
-  }, [quill, socketRef, client]);
+  }, [quill]);
 
   /**
    * load document byId
@@ -96,11 +100,11 @@ const TextEditor = React.memo(({ socketRef, roomId, client }) => {
     if (!quill || !socketRef.current) return;
     /** load doc with once */
     socketRef &&
-      socketRef.current.on(ACTIONS.LOAD_DOC, ({ doc }) => {
+      socketRef.current.once(ACTIONS.LOAD_DOC, ({ doc }) => {
         if (doc) {
           console.log(`Space available ${doc}`);
-          quill.setText(doc);
-        } 
+          quill.setContents(doc);
+        }
       });
   }, [quill, socketRef, roomId]);
 
