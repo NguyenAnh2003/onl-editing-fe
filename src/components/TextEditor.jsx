@@ -85,7 +85,7 @@ const TextEditor = React.memo(({ socketRef, roomId, client }) => {
 
     const interval = setInterval(() => {
       socketRef.current.emit(ACTIONS.SAVE_TEXT, { roomId, content: quill.getContents() });
-    }, 2000);
+    }, 500);
 
     return () => {
       clearInterval(interval);
