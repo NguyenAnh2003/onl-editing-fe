@@ -3,23 +3,50 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useRef, useState } from 'react';
 import Quill from 'quill';
-import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { toolbarOptions } from '../config/quill.config';
 import ACTIONS from '../actions';
+import QuillCursors from 'quill-cursors';
+/** cursor setup */
+Quill.register('modules/cursors', QuillCursors);
+const CURSOR_LATENCY = 1000;
+const TEXT_LATENCY = 500;
 
 const TextEditor = React.memo(({ socketRef, roomId, client }) => {
   const [quill, setQuill] = useState(null);
+  /** flag change */
+  const [flag, setFlag] = useState(false);
+
+  /** set up Quill cursor */
+  const cursorRef = useRef(null);
+
   /** setup Quill */
   useEffect(() => {
     const quillObject = new Quill('#main-container', {
       theme: 'snow',
-      modules: { toolbar: toolbarOptions },
+      modules: { toolbar: toolbarOptions, cursors: { transformOnTextChange: true } },
     });
     setQuill(quillObject);
   }, []);
+
+  /** set up Quill cursor
+   * Quill cursor setup
+   * including createCursor('cursor', 'client', 'color')
+   */
+  useEffect(() => {
+    if (!quill) return;
+    cursorRef.current = quill.getModule('cursors');
+
+    /** Validate cursor */
+    if (cursorRef) {
+      /** create cursor */
+      const cursor = cursorRef.current.createCursor('cursor', client, 'red');
+      // cursorRef.current.addCursor(cursor)
+      console.log(`cursor available ${cursor}`);
+    }
+  }, [quill, cursorRef]);
 
   /**
    *
@@ -36,10 +63,11 @@ const TextEditor = React.memo(({ socketRef, roomId, client }) => {
     const handleChange = (content, oldData, src) => {
       if (src !== 'user') return;
 
-      /** */
+      /** set Flag */
+      setFlag(true);
       console.log('content component', content);
 
-      /** */
+      /** emit on text change */
       socketRef &&
         socketRef.current.emit(ACTIONS.TEXT_CHANGE, {
           roomId,
@@ -71,7 +99,7 @@ const TextEditor = React.memo(({ socketRef, roomId, client }) => {
       /** socket off */
       socketRef.current.off(ACTIONS.TEXT_CHANGE, handleEmit);
     };
-  }, [quill, socketRef, client]);
+  }, [quill, socketRef, client, flag]);
 
   /** rerender when text change - save text */
   useEffect(() => {
@@ -82,14 +110,17 @@ const TextEditor = React.memo(({ socketRef, roomId, client }) => {
      * Each changes will send to server and update in DB
      */
 
-    const interval = setInterval(() => {
-      socketRef.current.emit(ACTIONS.SAVE_TEXT, { roomId, content: quill.getContents() });
-    }, 500);
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [quill]);
+    /**
+     * Save on flag true with delay 500
+     */
+    if (flag === true) {
+      setTimeout(() => {
+        socketRef.current.emit(ACTIONS.SAVE_TEXT, { roomId, content: quill.getContents() });
+        setFlag(!flag);
+      }, 500);
+    }
+    /** re-render with flag change */
+  }, [quill, flag]);
 
   /**
    * load document byId
