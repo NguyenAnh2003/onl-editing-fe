@@ -43,7 +43,6 @@ const TextEditor = React.memo(({ socketRef, roomId, client }) => {
     if (cursorRef) {
       /** create cursor */
       const cursor = cursorRef.current.createCursor('cursor', client, 'red');
-      // cursorRef.current.addCursor(cursor)
       console.log(`cursor available ${cursor}`);
     }
   }, [quill, cursorRef]);
@@ -99,7 +98,7 @@ const TextEditor = React.memo(({ socketRef, roomId, client }) => {
       /** socket off */
       socketRef.current.off(ACTIONS.TEXT_CHANGE, handleEmit);
     };
-  }, [quill, socketRef, client, flag]);
+  }, [quill, socketRef]);
 
   /** rerender when text change - save text */
   useEffect(() => {
