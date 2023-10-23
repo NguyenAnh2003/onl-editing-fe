@@ -5,7 +5,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import UserCard from '../components/UserCard';
-// import Editor from '../components/Editor';
 import { initSocket } from '../socket';
 import ACTIONS from '../actions';
 import ReactQuillEditor from '../components/ReactQuillEditor';
@@ -107,8 +106,8 @@ const EditRoom = () => {
           Leave
         </button>
       </div>
-      {socketRef && roomId && name && color && socketId && (
-        <ReactQuillEditor socketRef={socketRef} roomId={roomId} client={name} color={color} socketId={socketId} />
+      {socketRef && roomId && name && color && socketId && clients && (
+        <ReactQuillEditor socketRef={socketRef} roomId={roomId} client={name} color={color} socketId={socketId} clients={clients} />
       )}
     </div>
   );
