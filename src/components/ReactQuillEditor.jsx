@@ -13,7 +13,6 @@ Quill.register('modules/cursors', QuillCursors);
 
 const ReactQuillEditor = React.memo(({ socketRef, roomId, client, color, socketId }) => {
   const editorRef = useRef(null);
-  const currentTime = new Date().toLocaleTimeString();
   const cursorRef = useRef(null);
 
   /** Init cursor */
@@ -25,56 +24,52 @@ const ReactQuillEditor = React.memo(({ socketRef, roomId, client, color, socketI
       cursorRef.current?.createCursor(socketId, client, color);
       console.log(cursorRef.current);
     }
-  }, [editorRef]);
+  }, [editorRef, socketId, client, color]);
 
-  /** Load data from WS */
-
-  /**
-   * fetch data from text change
-   */
   useEffect(() => {
     if (!socketRef.current || !editorRef.current) {
-      console.log('NUll', currentTime);
       return;
     }
-    console.log('ACTIVATE');
+    console.log('ACTIVATE', new Date().toLocaleTimeString());
     /** Load doc */
-    socketRef.current.on(ACTIONS.LOAD_DOC, ({ doc }) => {
-      console.log(doc);
+    socketRef.current?.on(ACTIONS.LOAD_DOC, ({ doc }) => {
+      if (doc) {
+        console.log(doc);
+        
+      }
     });
 
-    // /** fetching text */
-    socketRef.current.on(ACTIONS.TEXT_CHANGE, ({ content, client: senderClient }) => {
+    /** fetching text */
+    socketRef?.current?.on(ACTIONS.TEXT_CHANGE, ({ content, client: senderClient }) => {
       console.log(content ? content : 'NULL CONTENT');
+      if (senderClient !== client) {
+        editorRef.current.editor.updateContents(content, 'api');
+      }
     });
-  }, [socketRef, editorRef]);
+  }, [socketRef.current]);
 
   /** onTextChange */
   const onChangeHandler = (content, delta, source) => {
     if (!content || !socketRef || source !== 'user') return;
     console.log('socket available', socketRef, 'content', content);
-    // console.log(content);
-    socketRef.current.emit(ACTIONS.TEXT_CHANGE, { roomId, content, client });
+    socketRef.current?.emit(ACTIONS.TEXT_CHANGE, { roomId, content: delta, client });
   };
 
   const onSelectionChangeHandler = (selection, source) => {
     if (selection) {
-      // console.log(selection);
       cursorRef.current?.moveCursor(socketId, selection);
     }
   };
 
   return (
-    <div>
-      <ReactQuill
-        theme="snow"
-        modules={module}
-        formats={formats}
-        ref={editorRef}
-        onChangeSelection={onSelectionChangeHandler}
-        onChange={onChangeHandler}
-      />
-    </div>
+    <ReactQuill
+      theme="snow"
+      modules={module}
+      formats={formats}
+      ref={editorRef}
+      onChangeSelection={onSelectionChangeHandler}
+      onChange={onChangeHandler}
+    />
   );
 });
 

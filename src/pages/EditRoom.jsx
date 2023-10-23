@@ -9,7 +9,7 @@ import UserCard from '../components/UserCard';
 import { initSocket } from '../socket';
 import ACTIONS from '../actions';
 import ReactQuillEditor from '../components/ReactQuillEditor';
-import TextEditor from '../components/TextEditor';
+// import TextEditor from '../components/TextEditor';
 
 const EditRoom = () => {
   const { roomId } = useParams();
