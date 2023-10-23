@@ -10,6 +10,8 @@ https://culture.kissflow.com/render-react-component-inside-quill-without-losing-
 ### Source
 https://github.dev/kunaltyagi9/MERN-Stack-Projects/blob/master/google-docs-clone/client/src/component/Editor.jsx
 
+https://self-adi.medium.com/real-time-collaborative-editing-in-your-web-application-a2af6baa72ca
+
 ## read file docx js
 !!https://search.brave.com/search?q=read+data+form+docx+js&source=desktop
 docx4js: https://www.npmjs.com/package/docx4js

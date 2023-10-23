@@ -14,7 +14,7 @@ Quill.register('modules/cursors', QuillCursors);
 const CURSOR_LATENCY = 1000;
 const TEXT_LATENCY = 500;
 
-const TextEditor = React.memo(({ socketRef, roomId, client }) => {
+const TextEditor = ({ socketRef, roomId, client, color, socketId }) => {
   const [quill, setQuill] = useState(null);
   /** flag change */
   const [flag, setFlag] = useState(false);
@@ -26,26 +26,65 @@ const TextEditor = React.memo(({ socketRef, roomId, client }) => {
   useEffect(() => {
     const quillObject = new Quill('#main-container', {
       theme: 'snow',
-      modules: { toolbar: toolbarOptions, cursors: { transformOnTextChange: true } },
+      modules: {
+        toolbar: toolbarOptions,
+        cursors: true,
+      },
     });
     setQuill(quillObject);
   }, []);
 
   /** set up Quill cursor
    * Quill cursor setup
-   * including createCursor('cursor', 'client', 'color')
+   * including createCursor(socketId, 'client', 'color')
    */
-  useEffect(() => {
-    if (!quill) return;
-    cursorRef.current = quill.getModule('cursors');
 
+  useEffect(() => {
+    if (!quill || !client || !socketId || !color) return;
+    cursorRef.current = quill.getModule('cursors');
+    console.log(`Editor: ${socketId} ${client} ${color}`);
     /** Validate cursor */
     if (cursorRef) {
       /** create cursor */
-      const cursor = cursorRef.current.createCursor('cursor', client, 'red');
-      console.log(`cursor available ${cursor}`);
+      cursorRef.current.createCursor(socketId, client, color);
+      const currentTime = new Date().toLocaleDateString();
+      console.log(`cursor available ${cursorRef.current} ${currentTime}`);
     }
-  }, [quill, cursorRef]);
+  }, [quill, cursorRef, socketRef, client, socketId, color]);
+
+
+  /** cursor */
+  useEffect(() => {
+    if (!cursorRef || !quill || !socketRef) return;
+    const selectionChangeHandler = (range, oldRange, source) => {
+      if (source !== 'api') return;
+      
+      /** Sending cursor */
+      if (range) {
+        console.log(`Make a selection ${range}`);
+        socketRef && socketRef?.current.emit(ACTIONS.CURSOR_CHANGE, { socketId, client, roomId, range, source });
+        // cursorRef.current?.moveCursor(socketId, range);
+      } else {
+        console.log('Selection cleared');
+      }
+    };
+    quill && quill.on('selection-change', selectionChangeHandler);
+
+    /**Receive cursor */
+    socketRef &&
+      socketRef?.current.on(ACTIONS.CURSOR_CHANGE, ({ socketId, client: senderClient, range, source }) => {
+        if (senderClient !== client) {
+          console.log(cursor, senderClient, range, source);
+          if (range) {
+            cursorRef.current?.moveCursor(socketId, range);
+          }
+        }
+      });
+
+    return () => {
+      quill && quill.off('selection-change', selectionChangeHandler);
+    };
+  }, [cursorRef, quill, socketRef]);
 
   /**
    *
@@ -57,7 +96,7 @@ const TextEditor = React.memo(({ socketRef, roomId, client }) => {
    */
   useEffect(() => {
     /** set up data onChange */
-    if (!socketRef.current || !quill) return;
+    if (!socketRef.current || !quill || !client) return;
 
     const handleChange = (content, oldData, src) => {
       if (src !== 'user') return;
@@ -68,7 +107,7 @@ const TextEditor = React.memo(({ socketRef, roomId, client }) => {
 
       /** emit on text change */
       socketRef &&
-        socketRef.current.emit(ACTIONS.TEXT_CHANGE, {
+        socketRef?.current.emit(ACTIONS.TEXT_CHANGE, {
           roomId,
           content,
           client,
@@ -85,7 +124,7 @@ const TextEditor = React.memo(({ socketRef, roomId, client }) => {
 
     /** fetching data when text change */
     socketRef &&
-      socketRef.current.on(ACTIONS.TEXT_CHANGE, ({ content, client: senderClient }) => {
+      socketRef?.current.on(ACTIONS.TEXT_CHANGE, ({ content, client: senderClient }) => {
         console.log(content ? { content, senderClient } : 'null content');
         /** Avoid feedback loop */
         if (content && senderClient !== client) {
@@ -96,9 +135,9 @@ const TextEditor = React.memo(({ socketRef, roomId, client }) => {
     return () => {
       quill && quill.off('text-change', handleChange);
       /** socket off */
-      socketRef.current.off(ACTIONS.TEXT_CHANGE, handleEmit);
+      socketRef?.current.off(ACTIONS.TEXT_CHANGE, handleEmit);
     };
-  }, [quill, socketRef]);
+  }, [quill, socketRef, client]);
 
   /** rerender when text change - save text */
   useEffect(() => {
@@ -114,7 +153,7 @@ const TextEditor = React.memo(({ socketRef, roomId, client }) => {
      */
     if (flag === true) {
       setTimeout(() => {
-        socketRef.current.emit(ACTIONS.SAVE_TEXT, { roomId, content: quill.getContents() });
+        socketRef?.current.emit(ACTIONS.SAVE_TEXT, { roomId, content: quill.getContents() });
         setFlag(!flag);
       }, 500);
     }
@@ -142,6 +181,6 @@ const TextEditor = React.memo(({ socketRef, roomId, client }) => {
       <div className="main-container" id="main-container"></div>
     </div>
   );
-});
+};
 
 export default TextEditor;

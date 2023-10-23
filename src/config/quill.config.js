@@ -13,6 +13,7 @@ export const module = {
     // toggle to add extra line breaks when pasting HTML:
     matchVisual: false,
   },
+  cursors: true
 };
 
 export const formats = ['header', 'font', 'size', 'bold', 'italic', 'underline', 'strike', 'blockquote', 'list', 'bullet', 'indent', 'link', 'image', 'video'];

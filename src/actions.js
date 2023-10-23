@@ -6,7 +6,7 @@ const ACTIONS = {
   GET_DOC: 'get-doc',
   SAVE_TEXT: 'save-doc',
   LOAD_DOC: 'load-doc',
-  SYNC_TEXT: 'sync-text',
+  CURSOR_CHANGE: 'cursor-change',
   LEAVE: 'leave',
 };
 

@@ -8,6 +8,7 @@ import UserCard from '../components/UserCard';
 // import Editor from '../components/Editor';
 import { initSocket } from '../socket';
 import ACTIONS from '../actions';
+import ReactQuillEditor from '../components/ReactQuillEditor';
 import TextEditor from '../components/TextEditor';
 
 const EditRoom = () => {
@@ -15,6 +16,9 @@ const EditRoom = () => {
   const socketRef = useRef(null);
   const location = useLocation();
   const [clients, setClients] = useState([]);
+  const [color, setColor] = useState();
+  const [socketId, setSocketId] = useState();
+  const [name, setName] = useState();
 
   useEffect(() => {
     const init = async () => {
@@ -27,16 +31,27 @@ const EditRoom = () => {
         name: location.state?.name,
       });
 
+      /** setName */
+      setName(location.state?.name);
+
       /**
        * Listenning for joining people
        */
-      socketRef.current.on(ACTIONS.JOINED, ({ clients, name, socketId }) => {
+      socketRef.current.on(ACTIONS.JOINED, ({ clients, name, socketId, color }) => {
         // if (name === location.state?.name) {
         //   console.log(`Success joined: ${name}`);
         // }
-        console.log(`username: ${name}`);
-        console.log('clients', clients);
-        console.log(`socketId: ${socketId}`);
+        console.log(`username: ${name} - ${color} - ${socketId} clients: ${clients}`);
+        console.log(clients);
+        /**
+         * set info for cursor
+         * color
+         * name - client
+         * socketId || name
+         * */
+        setColor(color);
+        setSocketId(socketId);
+        /** clients */
         setClients(clients);
       });
 
@@ -72,20 +87,27 @@ const EditRoom = () => {
       <p className="text-xl">Room ID: {roomId}</p>
       <>
         {clients.map((i) => (
-          <UserCard key={i.name} name={i.name} />
+          <UserCard key={i.socketId} name={i.name} />
         ))}
       </>
       <div>
-        <button type="button" onClick={copyRoomIDHandler(roomId)} className="hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-base font-semibold text-white outline-none">
+        <button
+          type="button"
+          onClick={copyRoomIDHandler(roomId)}
+          className="hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-base font-semibold text-white outline-none"
+        >
           Coppy room ID
         </button>
       </div>
       <div>
-        <button type="button" className="mt-10 mb-10 hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-base font-semibold text-white outline-none">
+        <button
+          type="button"
+          className="mt-10 mb-10 hover:shadow-form rounded-md bg-[#6A64F1] py-3 px-8 text-base font-semibold text-white outline-none"
+        >
           Leave
         </button>
       </div>
-      <TextEditor socketRef={socketRef} roomId={roomId} client={location.state?.name} />
+      <ReactQuillEditor socketRef={socketRef} roomId={roomId} client={name} color={color} socketId={socketId} />
     </div>
   );
 };
