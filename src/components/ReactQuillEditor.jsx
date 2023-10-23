@@ -2,7 +2,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ReactQuill, { Quill } from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import ACTIONS from '../actions';
@@ -14,6 +14,8 @@ Quill.register('modules/cursors', QuillCursors);
 const ReactQuillEditor = React.memo(({ socketRef, roomId, client, color, socketId }) => {
   const editorRef = useRef(null);
   const cursorRef = useRef(null);
+  const [value, setValue] = useState();
+  const [flag, setFlag] = useState(false);
 
   /** Init cursor */
   useEffect(() => {
@@ -26,16 +28,25 @@ const ReactQuillEditor = React.memo(({ socketRef, roomId, client, color, socketI
     }
   }, [editorRef, socketId, client, color]);
 
+  /** Init load doc */
+  useEffect(() => {
+    if (!socketRef.current) return;
+    socketRef.current?.emit(ACTIONS.LOAD_DOC, { roomId });
+  }, [roomId]);
+
+  /** save data in space */
+  
+
   useEffect(() => {
     if (!socketRef.current || !editorRef.current) {
       return;
     }
     console.log('ACTIVATE', new Date().toLocaleTimeString());
     /** Load doc */
-    socketRef.current?.on(ACTIONS.LOAD_DOC, ({ doc }) => {
+    socketRef.current?.once(ACTIONS.LOAD_DOC, ({ doc }) => {
       if (doc) {
-        console.log(doc);
-        
+        console.log(`Space: `, doc);
+        setValue(doc);
       }
     });
 
@@ -52,6 +63,9 @@ const ReactQuillEditor = React.memo(({ socketRef, roomId, client, color, socketI
   const onChangeHandler = (content, delta, source) => {
     if (!content || !socketRef || source !== 'user') return;
     console.log('socket available', socketRef, 'content', content);
+    /** set Flag for change */
+    setFlag(true);
+    /** Emit data */
     socketRef.current?.emit(ACTIONS.TEXT_CHANGE, { roomId, content: delta, client });
   };
 
@@ -64,6 +78,7 @@ const ReactQuillEditor = React.memo(({ socketRef, roomId, client, color, socketI
   return (
     <ReactQuill
       theme="snow"
+      value={value}
       modules={module}
       formats={formats}
       ref={editorRef}
