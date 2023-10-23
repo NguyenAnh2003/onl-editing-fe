@@ -18,11 +18,11 @@ const ReactQuillEditor = React.memo(({ socketRef, roomId, client, color, socketI
 
   /** Init cursor */
   useEffect(() => {
-    if (!editorRef.current) return; 
-    cursorRef.current = editorRef.current.editor.getModule('cursors');
+    if (!editorRef.current) return;
+    cursorRef.current = editorRef.current?.editor?.getModule('cursors');
 
     if (cursorRef) {
-      cursorRef.current.createCursor(socketId, client, color);
+      cursorRef.current?.createCursor(socketId, client, color);
       console.log(cursorRef.current);
     }
   }, [editorRef]);
@@ -45,7 +45,7 @@ const ReactQuillEditor = React.memo(({ socketRef, roomId, client, color, socketI
 
     // /** fetching text */
     socketRef.current.on(ACTIONS.TEXT_CHANGE, ({ content, client: senderClient }) => {
-      console.log(content);
+      console.log(content ? content : 'NULL CONTENT');
     });
   }, [socketRef, editorRef]);
 
@@ -60,7 +60,7 @@ const ReactQuillEditor = React.memo(({ socketRef, roomId, client, color, socketI
   const onSelectionChangeHandler = (selection, source) => {
     if (selection) {
       // console.log(selection);
-      cursorRef.current.moveCursor(socketId, selection) 
+      cursorRef.current?.moveCursor(socketId, selection);
     }
   };
 

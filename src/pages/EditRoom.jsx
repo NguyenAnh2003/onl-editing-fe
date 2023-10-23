@@ -107,7 +107,9 @@ const EditRoom = () => {
           Leave
         </button>
       </div>
-      <ReactQuillEditor socketRef={socketRef} roomId={roomId} client={name} color={color} socketId={socketId} />
+      {socketRef && roomId && name && color && socketId && (
+        <ReactQuillEditor socketRef={socketRef} roomId={roomId} client={name} color={color} socketId={socketId} />
+      )}
     </div>
   );
 };
