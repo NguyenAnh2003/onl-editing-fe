@@ -55,23 +55,21 @@ const ReactQuillEditor = React.memo(({ socketRef, roomId, client, color, socketI
   // }, [socketRef, flag]);
 
   /** clients cursor setup */
-  // useEffect(() => {
-  //   if (!clients) return;
-  //   console.log('Client group', clients);
-  //   clients.forEach(({ socketId, client, color, selection }) => {
-  //     console.log(socketId, client, color, selection);
-  //     cursorRef.current?.createCursor(socketId, client, color);
-  //     if (selection) {
-  //     }
-  //   });
-  // }, [clients]);
+  useEffect(() => {
+    if (!clients) return;
+    console.log('Client group', clients);
+    clients.forEach(({ socketId, client, color, selection }) => {
+      console.log(socketId, client, color, selection);
+      cursorRef.current?.createCursor(socketId, client, color);
+    });
+  }, [clients]);
 
   /** cursor change */
   useEffect(() => {
     if (!socketRef.current) return;
-    socketRef.current.on(ACTIONS.CURSOR_CHANGE, ({ socketId, selection, client}) => {
-      if(selection) {
-        cursorRef.current.moveCursor(socketId, selection)
+    socketRef.current.on(ACTIONS.CURSOR_CHANGE, ({ socketId: senderSocketId, selection, client }) => {
+      if (selection) {
+        cursorRef.current.moveCursor(senderSocketId, selection);
       }
     });
   }, [socketRef]);
