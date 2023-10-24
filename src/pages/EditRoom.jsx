@@ -8,7 +8,6 @@ import UserCard from '../components/UserCard';
 import { initSocket } from '../socket';
 import ACTIONS from '../actions';
 import ReactQuillEditor from '../components/ReactQuillEditor';
-// import TextEditor from '../components/TextEditor';
 
 const EditRoom = () => {
   const { roomId } = useParams();
@@ -19,27 +18,22 @@ const EditRoom = () => {
 
   useEffect(() => {
     const init = async () => {
-      /**
-       *
-       */
+      /* INIT */
       socketRef.current = await initSocket();
       socketRef.current.emit(ACTIONS.JOIN, {
         roomId,
         name: location.state?.name,
       });
 
-      /**
-       * Listenning for joining people
-       */
-      socketRef.current.on(ACTIONS.JOINED, ({ clients }) => {
+      /* Listenning for joining people */
+      socketRef.current.on(ACTIONS.JOINED, ({ clients, color }) => {
+        setColor(color);
         /* Set clients */
         setClients(clients);
         clients.forEach((name, socketId, color) => console.log(`username: ${name} id:${socketId} color:${color}`));
       });
 
-      /**
-       * disconnect
-       */
+      /* disconnect */
       socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, name }) => {
         console.log(`${name} left room`);
         setClients((prev) => {
@@ -58,12 +52,6 @@ const EditRoom = () => {
       socketRef.current.off(ACTIONS.DISCONNECTED);
     };
   }, []);
-
-  useEffect(() => {
-    clients.forEach(({ socketId, name, color }) => {
-      setColor(color);
-    });
-  }, [clients]);
 
   const copyRoomIDHandler = (roomId) => {
     navigator.clipboard.writeText(roomId);
@@ -96,7 +84,14 @@ const EditRoom = () => {
         </button>
       </div>
       {socketRef && roomId && color && clients && (
-        <ReactQuillEditor socketRef={socketRef} roomId={roomId} client={location.state?.name} color={color} socketId={socketRef.current.id} clients={clients} />
+        <ReactQuillEditor
+          socketRef={socketRef}
+          roomId={roomId}
+          client={location.state?.name}
+          color={color}
+          socketId={socketRef.current.id}
+          clients={clients}
+        />
       )}
     </div>
   );

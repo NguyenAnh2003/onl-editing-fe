@@ -35,7 +35,7 @@ const ReactQuillEditor = React.memo(({ socketRef, roomId, client, color, socketI
       cursorRef.current?.createCursor(socketId, client, color);
       console.log(cursorRef.current);
     }
-  }, [editorRef, socketId, client, color]);
+  }, [editorRef, cursorRef]);
 
   /** Init load doc */
   useEffect(() => {
@@ -58,9 +58,9 @@ const ReactQuillEditor = React.memo(({ socketRef, roomId, client, color, socketI
   useEffect(() => {
     if (!clients) return;
     console.log('Client group', clients);
-    clients.forEach(({ socketId, name, color }) => {
-      console.log(socketId, name, color);
-      cursorRef.current?.createCursor(socketId, name, color); 
+    clients.forEach(({ socketId, name, color: colorSender }) => {
+      console.log(socketId, name, colorSender);
+      cursorRef.current?.createCursor(socketId, name, colorSender);
     });
     console.dir(cursorRef.current);
   }, [clients]);
@@ -68,7 +68,7 @@ const ReactQuillEditor = React.memo(({ socketRef, roomId, client, color, socketI
   /** cursor change */
   useEffect(() => {
     if (!socketRef.current) return;
-    socketRef.current.on(ACTIONS.CURSOR_CHANGE, ({ socketId: senderSocketId, selection, client }) => {
+    socketRef.current.on(ACTIONS.CURSOR_CHANGE, ({ socketId: senderSocketId, selection }) => {
       if (selection) {
         cursorRef.current.moveCursor(senderSocketId, selection);
       }
@@ -84,7 +84,7 @@ const ReactQuillEditor = React.memo(({ socketRef, roomId, client, color, socketI
         setValue(doc);
       }
     });
-  }, [socketRef.current, value]);
+  }, [socketRef, value]);
 
   useEffect(() => {
     if (!socketRef.current || !editorRef.current) return;
@@ -96,7 +96,14 @@ const ReactQuillEditor = React.memo(({ socketRef, roomId, client, color, socketI
         editorRef.current.editor.updateContents(content, 'api');
       }
     });
-  }, [socketRef.current]);
+
+    /** disconnect */
+
+    return () => {
+      socketRef.current.disconnect();
+      socketRef.current.off(ACTIONS.DISCONNECTED, () => cursorRef.current.removeCursor(socketId));
+    };
+  }, [socketRef]);
 
   /** onTextChange */
   const onChangeHandler = (content, delta, source) => {
@@ -121,7 +128,7 @@ const ReactQuillEditor = React.memo(({ socketRef, roomId, client, color, socketI
        * @param source (user, api)
        */
       console.log(socketId, selection, client);
-      socketRef.current.emit(ACTIONS.CURSOR_CHANGE, { roomId, socketId, selection, source, client });
+      socketRef.current.emit(ACTIONS.CURSOR_CHANGE, { roomId, socketId, selection,  });
     }
   };
 
