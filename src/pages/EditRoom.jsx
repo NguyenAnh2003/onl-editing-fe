@@ -16,8 +16,6 @@ const EditRoom = () => {
   const location = useLocation();
   const [clients, setClients] = useState([]);
   const [color, setColor] = useState();
-  const [socketId, setSocketId] = useState();
-  const [name, setName] = useState();
 
   useEffect(() => {
     const init = async () => {
@@ -30,28 +28,13 @@ const EditRoom = () => {
         name: location.state?.name,
       });
 
-      /** setName */
-      setName(location.state?.name);
-
       /**
        * Listenning for joining people
        */
-      socketRef.current.on(ACTIONS.JOINED, ({ clients, name, socketId, color }) => {
-        // if (name === location.state?.name) {
-        //   console.log(`Success joined: ${name}`);
-        // }
-        console.log(`username: ${name} - ${color} - ${socketId} clients: ${clients}`);
-        console.log(clients);
-        /**
-         * set info for cursor
-         * color
-         * name - client
-         * socketId || name
-         * */
-        setColor(color);
-        setSocketId(socketId);
-        /** clients */
+      socketRef.current.on(ACTIONS.JOINED, ({ clients }) => {
+        /* Set clients */
         setClients(clients);
+        clients.forEach((name, socketId, color) => console.log(`username: ${name} id:${socketId} color:${color}`));
       });
 
       /**
@@ -76,6 +59,12 @@ const EditRoom = () => {
     };
   }, []);
 
+  useEffect(() => {
+    clients.forEach(({ socketId, name, color }) => {
+      setColor(color);
+    });
+  }, [clients]);
+
   const copyRoomIDHandler = (roomId) => {
     navigator.clipboard.writeText(roomId);
   };
@@ -86,7 +75,7 @@ const EditRoom = () => {
       <p className="text-xl">Room ID: {roomId}</p>
       <>
         {clients.map((i) => (
-          <UserCard key={i.socketId} name={i.name} />
+          <UserCard key={i.socketId} name={i.name} socketId={i.socketId} />
         ))}
       </>
       <div>
@@ -106,8 +95,8 @@ const EditRoom = () => {
           Leave
         </button>
       </div>
-      {socketRef && roomId && name && color && socketId && clients && (
-        <ReactQuillEditor socketRef={socketRef} roomId={roomId} client={name} color={color} socketId={socketId} clients={clients} />
+      {socketRef && roomId && color && clients && (
+        <ReactQuillEditor socketRef={socketRef} roomId={roomId} client={location.state?.name} color={color} socketId={socketRef.current.id} clients={clients} />
       )}
     </div>
   );

@@ -60,8 +60,9 @@ const ReactQuillEditor = React.memo(({ socketRef, roomId, client, color, socketI
     console.log('Client group', clients);
     clients.forEach(({ socketId, client, color, selection }) => {
       console.log(socketId, client, color, selection);
-      cursorRef.current?.createCursor(socketId, client, color);
+      cursorRef.current?.createCursor(socketId, client, color); 
     });
+    console.dir(cursorRef.current);
   }, [clients]);
 
   /** cursor change */
