@@ -16,6 +16,11 @@ const EditRoom = () => {
   const [clients, setClients] = useState([]);
   const [color, setColor] = useState();
 
+  /**
+   * Edit room
+   * contains user info (name, color(random init first when get info in DB))
+   * Then init socketRef to get socketId
+   */
   useEffect(() => {
     const init = async () => {
       /* INIT */
@@ -84,14 +89,7 @@ const EditRoom = () => {
         </button>
       </div>
       {socketRef && roomId && color && clients && (
-        <ReactQuillEditor
-          socketRef={socketRef}
-          roomId={roomId}
-          client={location.state?.name}
-          color={color}
-          socketId={socketRef.current.id}
-          clients={clients}
-        />
+        <ReactQuillEditor socketRef={socketRef} roomId={roomId} client={location.state?.name} color={color} clients={clients} />
       )}
     </div>
   );
