@@ -89,7 +89,14 @@ const EditRoom = () => {
         </button>
       </div>
       {socketRef && roomId && color && clients && (
-        <ReactQuillEditor socketRef={socketRef} roomId={roomId} client={location.state?.name} color={color} clients={clients} />
+        <ReactQuillEditor
+          socketRef={socketRef}
+          socketId={socketRef?.current.id}
+          roomId={roomId}
+          client={location.state?.name}
+          color={color}
+          clients={clients}
+        />
       )}
     </div>
   );
