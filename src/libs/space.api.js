@@ -10,8 +10,8 @@
 import { postHTTP, getHTTP, deleteHTTP } from '../config/api.config';
 
 /** getSpace */
-export const getSpace = (spaceId) => {
-  const res = getHTTP(`${spaceId}`);
+export const getSpace = (userId) => {
+  const res = getHTTP(`${userId}`);
   return res;
 };
 

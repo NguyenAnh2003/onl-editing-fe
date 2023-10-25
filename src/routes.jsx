@@ -5,7 +5,8 @@ import {
 } from 'react-router-dom';
 import Layout from './components/layouts/Layout';
 import Home from './pages/Home';
-import EditRoom from './pages/EditRoom';
+import EditPage from './pages/EditPage';
+import MainEditPage from './pages/MainEditPage';
 
 const router = createBrowserRouter([
   {
@@ -18,7 +19,11 @@ const router = createBrowserRouter([
       },
       {
         path: 'editor/:roomId',
-        element: <EditRoom />,
+        element: <EditPage />,
+      },
+      {
+        path: 'edit',
+        element: <MainEditPage />,
       }
     ],
   },
