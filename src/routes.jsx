@@ -14,7 +14,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Home />,
+        element: <MainEditPage />,
       },
       {
         path: 'editor/:roomId',
@@ -22,7 +22,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'edit',
-        element: <MainEditPage />,
+        element: <Home />,
       },
       {
         path: 'signin',

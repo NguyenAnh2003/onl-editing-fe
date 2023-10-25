@@ -13,7 +13,7 @@ const SignInPage = () => {
     try {
       const res = await userLogin(nameRef.current.value, passwordRef.current.value);
       console.log(res);
-      if (res.status === 200) navigation('/');
+      // if (res.status === 200) navigation('/');
     } catch (error) {
       console.error(error);
     }
