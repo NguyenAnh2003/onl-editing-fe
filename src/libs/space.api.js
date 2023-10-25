@@ -10,14 +10,20 @@
 import { postHTTP, getHTTP, deleteHTTP } from '../config/api.config';
 
 /** getSpace */
-export const getSpace = (userId) => {
+export const getPage = (pageId) => {
+  const res = getHTTP(`${pageId}`);
+  return res;
+};
+
+/** getSpace */
+export const getPageByUserId = (userId) => {
   const res = getHTTP(`${userId}`);
   return res;
 };
 
 /** createSpace */
-export const createSpace = (spaceId) => {
-  const res = postHTTP('/url', spaceId);
+export const createSpace = (pageId) => {
+  const res = postHTTP('/create-page', pageId);
   return res;
 };
 

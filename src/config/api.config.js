@@ -1,10 +1,10 @@
 import axios from 'axios';
 
 const axiosConfig = axios.create({
-  baseURL: 'http://localhost:5000/',
+  baseURL: 'http://localhost:5000/api/',
   headers: {
     /* No auth */
-    'Content-type': 'application/json',
+    'Content-Type': 'application/json',
   },
 });
 
@@ -24,7 +24,7 @@ export const postHTTP = async (url, params = {}) => {
     data: res.data,
     status: res.status,
     headers: res.headers,
-  };
+  }; 
 };
 
 export const getHTTP = async (url) => {

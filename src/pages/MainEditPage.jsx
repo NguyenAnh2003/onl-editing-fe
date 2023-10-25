@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useEffect, useState } from 'react';
-import { getSpace } from '../libs/space.api';
+import { getPage } from '../libs/space.api';
 import Page from '../components/Page';
 import ReactQuillEditor from '../components/ReactQuillEditor';
 
