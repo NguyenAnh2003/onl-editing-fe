@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { getPage } from '../libs/space.api';
 import Page from '../components/Page';
 import ReactQuillEditor from '../components/ReactQuillEditor';
+import { UserContext } from '../UserProvider';
 
 /**
  * page list
@@ -12,13 +13,19 @@ import ReactQuillEditor from '../components/ReactQuillEditor';
 const MainEditPage = () => {
   const [pageId, setPageID] = useState('');
   const [listPage, setListPage] = useState([]);
+  const { currentUser } = useContext(UserContext);
+
+  useEffect(() => {
+    if (!currentUser) return;
+    console.log('currentUser', currentUser);
+  }, []);
 
   /** fetching pages from userId */
   useEffect(() => {
     const fetchData = async () => {
       try {
         /** fetch pages */
-        const data = await getSpace();
+        const data = await getPage();
         console.log(data);
         /** prev => ... prev, data */
         setListPage((prev) => [...prev, data]);

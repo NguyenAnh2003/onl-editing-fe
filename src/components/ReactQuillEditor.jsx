@@ -13,12 +13,7 @@ import QuillCursors from 'quill-cursors';
 Quill.register('modules/cursors', QuillCursors);
 
 /**
- * @prop socketRef - user Socket
- * @prop roomId
- * @prop client - name
- * @prop color - user's color -> cursor setup
- * @prop socketId -> cursor setup
- * @prop clients -> cursor setup
+ * @prop pageId
  */
 const ReactQuillEditor = React.memo(({ socketRef, roomId, client, color, socketId, clients }) => {
   const editorRef = useRef(null);

@@ -58,6 +58,11 @@ const EditRoom = () => {
     };
   }, []);
 
+  useEffect(()=> {
+    if(!socketRef.current) return;
+    console.log(socketRef);
+  }, [])
+
   const copyRoomIDHandler = (roomId) => {
     navigator.clipboard.writeText(roomId);
   };

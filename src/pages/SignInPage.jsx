@@ -1,19 +1,22 @@
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable no-unused-vars */
-import React, { useRef } from 'react';
+import React, { useContext, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { userLogin } from '../libs/user.api';
+import { UserContext } from '../UserProvider';
 
 const SignInPage = () => {
   const nameRef = useRef(null);
   const passwordRef = useRef(null);
   const navigation = useNavigate();
+  const { login } = useContext(UserContext);
 
   const submitHandler = async () => {
     try {
       const res = await userLogin(nameRef.current.value, passwordRef.current.value);
       console.log(res);
-      // if (res.status === 200) navigation('/');
+      login(res.data)
+      if (res.status === 200) navigation('/');
     } catch (error) {
       console.error(error);
     }
