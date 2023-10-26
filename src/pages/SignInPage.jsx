@@ -3,7 +3,7 @@
 import React, { useContext, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { userLogin } from '../libs/user.api';
-import { UserContext } from '../UserProvider';
+import { UserContext } from '../store/UserProvider';
 
 const SignInPage = () => {
   const nameRef = useRef(null);
@@ -15,7 +15,7 @@ const SignInPage = () => {
     try {
       const res = await userLogin(nameRef.current.value, passwordRef.current.value);
       console.log(res);
-      login(res.data)
+      login(res.data);
       if (res.status === 200) navigation('/');
     } catch (error) {
       console.error(error);

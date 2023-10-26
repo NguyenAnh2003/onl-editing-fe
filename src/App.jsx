@@ -1,5 +1,5 @@
 /* eslint-disable no-unreachable */
-import { UserProvider } from './UserProvider';
+import { UserProvider } from './store/UserProvider';
 import AppRoute from './routes';
 
 function App() {
