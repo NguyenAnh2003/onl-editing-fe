@@ -16,7 +16,7 @@ export const getPage = (pageId) => {
 };
 
 /** getSpace */
-export const getPageByUserId = (userId) => {
+export const getPagesByUserId = (userId) => {
   const res = getHTTP(`${userId}`);
   return res;
 };

@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import React, { useContext, useEffect, useState } from 'react';
-import { getPage } from '../libs/space.api';
+import { getPage, getPagesByUserId } from '../libs/page.api';
 import Page from '../components/Page';
 import ReactQuillEditor from '../components/ReactQuillEditor';
 import { UserContext } from '../store/UserProvider';
@@ -23,26 +23,30 @@ const MainEditPage = () => {
   }, []);
 
   /** fetching pages from userId */
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       /** fetch pages */
-  //       const data = await getPage();
-  //       console.log(data);
-  //       /** prev => ... prev, data */
-  //       setListPage((prev) => [...prev, data]);
-  //     } catch (error) {
-  //       console.error(error);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        /** fetch pages by userId*/
+        const data = await getPagesByUserId(currentUser.userId);
+        console.log(data);
+        /** prev => ... prev, data */
+        setListPage((prev) => [...prev, data]);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <div>
       <div className="">
         <div className="">
-          <p>logram asmdm</p>
+          {listPage ? (
+            <></>
+          ) : (
+            <>None</>
+          )}
         </div>
 
         <div className="">{pageId ? <ReactQuillEditor /> : <>Leave</>}</div>
