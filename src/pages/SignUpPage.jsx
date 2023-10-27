@@ -1,18 +1,21 @@
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable no-unused-vars */
 import React, { useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { userRegister } from '../libs/user.api';
 
 const SignUpPage = () => {
   const nameRef = useRef(null);
   const passwordRef = useRef(null);
-
+  const navigate = useNavigate();
+  
   const submitHandler = async () => {
     try {
       console.log(nameRef.current.value, passwordRef.current.value);
       const res = await userRegister(nameRef.current?.value, passwordRef.current?.value);
       console.log(res);
+      /** if res navigate to sign in page (save info on browser manager) */
+      if (res.status === 200) navigate('/signin');
     } catch (error) {
       console.log(error);
     }

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 import Cookies from 'js-cookie';

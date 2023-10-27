@@ -11,11 +11,20 @@ const SignInPage = () => {
   const navigation = useNavigate();
   const { login } = useContext(UserContext);
 
+  /**
+   * Sign in get user data
+   * Save currentUser in state -> cookie
+   */
   const submitHandler = async () => {
     try {
       const res = await userLogin(nameRef.current.value, passwordRef.current.value);
       console.log(res);
+      /** 
+       * login - useContext 
+       * save currentUser in cookie
+       * */
       login(res.data);
+      /** Navigate to home */
       if (res.status === 200) navigation('/');
     } catch (error) {
       console.error(error);

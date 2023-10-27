@@ -40,3 +40,6 @@ When you make a local change in your quill editor, you also emit a TEXT_CHANGE e
 
 ### Quill js image saved in based64 solution
 https://www.youtube.com/watch?v=tR9a9rwfruM
+
+### MUI
+popup: https://mui.com/material-ui/react-popper/#material-ui-popup-state
