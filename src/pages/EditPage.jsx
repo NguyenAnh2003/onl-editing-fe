@@ -31,8 +31,8 @@ const EditRoom = () => {
       });
 
       /* Listenning for joining people */
-      socketRef.current.on(ACTIONS.JOINED, ({ clients, color }) => {
-        setColor(color);
+      socketRef.current.on(ACTIONS.JOINED, ({ clients, userJoined }) => {
+        setColor(userJoined.color);
         /* Set clients */
         setClients(clients);
         clients.forEach((name, socketId, color) => console.log(`username: ${name} id:${socketId} color:${color}`));

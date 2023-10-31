@@ -16,7 +16,7 @@ Quill.register('modules/cursors', QuillCursors);
 /**
  * @prop pageId
  */
-const ReactQuillEditor = React.memo(({ pageId, socketRef, roomId, client, color, socketId, clients }) => {
+const ReactQuillEditor = React.memo(({ socketRef, roomId, client, color, socketId, clients }) => {
   const editorRef = useRef(null);
   const cursorRef = useRef(null);
   const [value, setValue] = useState();
@@ -95,7 +95,7 @@ const ReactQuillEditor = React.memo(({ pageId, socketRef, roomId, client, color,
 
     /** disconnect */
 
-    return () => {
+    return () => { 
       socketRef.current.disconnect();
       socketRef.current.off(ACTIONS.DISCONNECTED, () => cursorRef.current.removeCursor(socketId));
     };

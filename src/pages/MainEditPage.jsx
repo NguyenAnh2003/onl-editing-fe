@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { createSpace, getPagesByUserId } from '../libs/page.api';
 import Page from '../components/Page';
 import { UserContext } from '../store/UserProvider';
@@ -18,6 +19,8 @@ import Editor from '../components/Editor';
  */
 
 const MainEditPage = () => {
+  /** navigate */
+  const navigate = useNavigate();
   /** setPageId used for component props onClick */
   const [pageId, setPageId] = useState('');
   const [listPage, setListPage] = useState([]);
@@ -25,10 +28,10 @@ const MainEditPage = () => {
   const pageName = useRef(null);
 
   useEffect(() => {
-    if (!currentUser) return;
-    console.log('currentUser', currentUser);
+    if (!currentUser) {
+      navigate('/signin');
+    }
   }, []);
-
 
   /** fetching pages from userId */
   useEffect(() => {
@@ -36,7 +39,7 @@ const MainEditPage = () => {
       try {
         /** fetch pages by userId*/
         const res = await getPagesByUserId(currentUser.userId);
-        console.log(res);
+        console.log(res.data);
         /** data */
         setListPage(res.data);
       } catch (error) {
@@ -97,7 +100,7 @@ const MainEditPage = () => {
           )}
         </div>
 
-        <div className="">{pageId ? <Editor pageId={pageId}/> : <>Leave</>}</div>
+        <div className="">{pageId ? <Editor pageId={pageId} /> : <>Leave</>}</div>
       </div>
     </div>
   );

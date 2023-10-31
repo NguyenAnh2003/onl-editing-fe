@@ -10,8 +10,8 @@
 import { postHTTP, getHTTP, deleteHTTP } from '../config/api.config';
 
 /** getPages */
-export const getPage = (pageId) => {
-  const res = getHTTP(`${pageId}`);
+export const getDataByPageId = (pageId) => {
+  const res = getHTTP(`/get-page/${pageId}`);
   return res;
 };
 
@@ -30,5 +30,11 @@ export const createSpace = (userId, pageName) => {
 /** deleteSpace */
 export const deleteSpace = (pageId) => {
   const res = deleteHTTP(`/delete/${pageId}`);
+  return res;
+};
+
+/** add user to page */
+export const addUserToPage = (userId, pageId) => {
+  const res = postHTTP('/add-user-to-page', { userId, pageId });
   return res;
 };

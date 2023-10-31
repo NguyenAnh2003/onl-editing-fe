@@ -1,4 +1,4 @@
-import { postHTTP } from '../config/api.config';
+import { getHTTP, postHTTP } from '../config/api.config';
 
 export const userLogin = async (name, password) => {
   const res = postHTTP('login', {
@@ -13,5 +13,10 @@ export const userRegister = async (name, password) => {
     name,
     password,
   });
+  return res;
+};
+
+export const searchUser = async (name) => {
+  const res = getHTTP(`search-user/${name}`,);
   return res;
 };
