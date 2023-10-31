@@ -32,7 +32,7 @@ const Editor = React.memo(({ pageId }) => {
   /** setClients group for pageId perform on UI*/
   const [group, setGroup] = useState([]);
   /** editor ref */
-  const editor = useRef(null);
+  const editorRef = useRef(null);
   /** search user Ref */
   const searchUserRef = useRef(null);
   /** set Page data */
@@ -60,9 +60,10 @@ const Editor = React.memo(({ pageId }) => {
 
       /** onTextChange */
       socketRef.current.on(ACTIONS.TEXT_CHANGE, ({ content, client: senderClient }) => {
-        // if (senderClient !== currentUser.username) {
-        // editor.current.editor.updateContents(content, 'api');
-        // }
+        if (currentUser.username !== senderClient) {
+          editorRef.current?.editor?.updateContents(content, 'api');
+          console.log('not equal');
+        }
       });
 
       /** disconnect pageId */
@@ -103,14 +104,16 @@ const Editor = React.memo(({ pageId }) => {
       console.log('none socket');
       return;
     }
-    socketRef && socketRef.current.emit(ACTIONS.TEXT_CHANGE, { roomId: pageId, content: delta });
+    if (source === 'user') {
+      socketRef && socketRef.current.emit(ACTIONS.TEXT_CHANGE, { roomId: pageId, content: delta, client: currentUser.username });
+    }
   };
   /** OnSelectionChange */
   const selectionChangeHandler = (selection, source) => {
     console.log(selection, source);
     if (selection) {
       /** Move cursor code */
-      
+
       /**
        *  socket Emit data
        * @param pageId
@@ -139,11 +142,11 @@ const Editor = React.memo(({ pageId }) => {
       {/* textfield search for users to add to pageId */}
       <input ref={searchUserRef} placeholder="Search to add" />
       <button onClick={searchHandler}>Search</button>
-      {userSearched ? <UserSearchedCard userId={userSearched.userId} username={userSearched.username}/> : <></>}
+      {userSearched ? <UserSearchedCard userId={userSearched.userId} username={userSearched.username} /> : <></>}
       {/* React Quill Editor */}
       <ReactQuill
         theme="snow"
-        ref={editor}
+        ref={editorRef}
         modules={module}
         formats={formats}
         onChange={textChangeHandler}

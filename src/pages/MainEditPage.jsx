@@ -105,7 +105,7 @@ const MainEditPage = () => {
           {/* currentUser pages (owner) */}
           Your pages
           {listPage ? (
-            <div className="max-w-xs divide-y">
+            <div className="max-w-xs ">
               {listPage.map((i, index) => (
                 <div>
                   {' '}
