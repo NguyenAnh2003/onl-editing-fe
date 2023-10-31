@@ -1,8 +1,10 @@
+/* eslint-disable react/no-unescaped-entities */
+/* eslint-disable react/jsx-key */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { createSpace, getPagesByUserId } from '../libs/page.api';
+import { createSpace, getColabPages, getPagesByUserId } from '../libs/page.api';
 import Page from '../components/Page';
 import { UserContext } from '../store/UserProvider';
 import Typography from '@mui/material/Typography';
@@ -24,6 +26,8 @@ const MainEditPage = () => {
   /** setPageId used for component props onClick */
   const [pageId, setPageId] = useState('');
   const [listPage, setListPage] = useState([]);
+  /** list Colab page */
+  const [colabPage, setColabPages] = useState([]);
   const { currentUser } = useContext(UserContext);
   const pageName = useRef(null);
 
@@ -39,7 +43,7 @@ const MainEditPage = () => {
       try {
         /** fetch pages by userId*/
         const res = await getPagesByUserId(currentUser.userId);
-        console.log(res.data);
+        // console.log(res.data);
         /** data */
         setListPage(res.data);
       } catch (error) {
@@ -47,6 +51,15 @@ const MainEditPage = () => {
       }
     };
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchColab = async () => {
+      const res = await getColabPages(currentUser.userId);
+      console.log('colab', res);
+      setColabPages(res.data);
+    };
+    fetchColab();
   }, []);
 
   /** create page handler  */
@@ -89,14 +102,33 @@ const MainEditPage = () => {
               </div>
             )}
           </PopupState>
+          {/* currentUser pages (owner) */}
+          Your pages
           {listPage ? (
             <div className="max-w-xs divide-y">
               {listPage.map((i, index) => (
-                <Page key={index} setPageId={setPageId} name={i.name} _id={i._id} />
+                <div>
+                  {' '}
+                  <Page key={index} setPageId={setPageId} name={i.name} _id={i._id} />
+                </div>
               ))}
             </div>
           ) : (
             <p>None</p>
+          )}
+          {/* colab pages */}
+          {colabPage ? (
+            <div className="max-w-xs divide-y">
+              {colabPage.map((i, index) => (
+                <div>
+                  {' '}
+                  Your colab pages
+                  <Page key={index} setPageId={setPageId} name={i.name} _id={i._id} />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p>Don't have colab pages yet</p>
           )}
         </div>
 
