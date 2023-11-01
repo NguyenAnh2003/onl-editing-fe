@@ -39,6 +39,10 @@ const Editor = React.memo(({ pageId }) => {
   const [data, setData] = useState({});
   /** set user after searched */
   const [userSearched, setUserSearched] = useState({});
+  /** Cursor */
+  const cursorRef = useRef(null);
+  /** user WS */
+  const [userWs, setUserWs] = useState({});
 
   /** init socket - change correspond to pageId*/
   useEffect(() => {
@@ -54,7 +58,7 @@ const Editor = React.memo(({ pageId }) => {
 
       /** Joined pageId res */
       socketRef.current.on(ACTIONS.JOINED, ({ clients, userJoined }) => {
-        if (clients) console.log(clients, userJoined);
+        setUserWs({ socketId: userJoined.socketId, name: userJoined.name, color: userJoined.color }); //
         setGroup(clients);
       });
 
@@ -66,11 +70,20 @@ const Editor = React.memo(({ pageId }) => {
         }
       });
 
+      /** cursor change */
+      socketRef.current.on(ACTIONS.CURSOR_CHANGE, ({ socketId, selection }) => {
+        if (selection) {
+          cursorRef.current.moveCursor(socketId, selection);
+        }
+      });
+
       /** disconnect pageId */
       socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, name }) => {
         setGroup((prev) => {
           return prev.filter((client) => client.socketId !== socketId);
         });
+        /** remove cursor */
+        cursorRef.current.removeCursor(socketId);
       });
     };
 
@@ -97,6 +110,22 @@ const Editor = React.memo(({ pageId }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageId]);
 
+  useEffect(() => {
+    /** init currentUser cursor */
+    cursorRef.current = editorRef.current?.editor?.getModule('cursors');
+    if (userWs && cursorRef.current) {
+      console.log(userWs);
+      cursorRef.current?.createCursor(userWs.socketId, userWs.name, userWs.color);
+    }
+  }, [cursorRef, userWs]);
+
+  /** init clients cursors */
+  useEffect(() => {
+    group.forEach(({ socketId, name, color }) => {
+      cursorRef.current.createCursor(socketId, name, color);
+    });
+  }, [group]);
+
   /** OnTextChange */
   const textChangeHandler = (content, delta, source) => {
     console.log(content, delta, source);
@@ -113,14 +142,14 @@ const Editor = React.memo(({ pageId }) => {
     console.log(selection, source);
     if (selection) {
       /** Move cursor code */
-
+      cursorRef.current.moveCursor(userWs.socketId, selection);
       /**
        *  socket Emit data
        * @param pageId
        * @param socketId
        * @param selection
        * */
-      socketRef.current.emit(ACTIONS.CURSOR_CHANGE, { roomId: pageId });
+      socketRef.current.emit(ACTIONS.CURSOR_CHANGE, { roomId: pageId, socketId: userWs.socketId, selection });
     }
   };
 
