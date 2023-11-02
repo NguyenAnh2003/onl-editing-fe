@@ -116,7 +116,7 @@ const Editor = React.memo(({ pageId }) => {
     if (userWs && cursorRef.current && currentUser) {
       console.log(userWs);
       cursorRef.current?.createCursor(userWs.socketId, userWs.name, "#0000");
-    }
+    }    
   }, [cursorRef, userWs, currentUser]);
 
   /** init clients cursors */
