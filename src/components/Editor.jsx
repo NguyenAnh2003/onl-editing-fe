@@ -113,11 +113,11 @@ const Editor = React.memo(({ pageId }) => {
   useEffect(() => {
     /** init currentUser cursor */
     cursorRef.current = editorRef.current?.editor?.getModule('cursors');
-    if (userWs && cursorRef.current) {
+    if (userWs && cursorRef.current && currentUser) {
       console.log(userWs);
-      cursorRef.current?.createCursor(userWs.socketId, userWs.name, userWs.color);
+      cursorRef.current?.createCursor(userWs.socketId, userWs.name, "#0000");
     }
-  }, [cursorRef, userWs]);
+  }, [cursorRef, userWs, currentUser]);
 
   /** init clients cursors */
   useEffect(() => {
