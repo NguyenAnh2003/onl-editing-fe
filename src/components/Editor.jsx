@@ -171,7 +171,7 @@ const Editor = React.memo(({ pageId }) => {
       {/* textfield search for users to add to pageId */}
       <input ref={searchUserRef} placeholder="Search to add" />
       <button onClick={searchHandler}>Search</button>
-      {userSearched ? <UserSearchedCard userId={userSearched.userId} username={userSearched.username} /> : <></>}
+      {userSearched ? <UserSearchedCard pageId={pageId} userId={userSearched.userId} username={userSearched.username} /> : <></>}
       {/* React Quill Editor */}
       <ReactQuill
         theme="snow"

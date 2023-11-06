@@ -6,8 +6,9 @@ import { addUserToPage } from '../libs/page.api';
 // eslint-disable-next-line react/prop-types
 const UserSearchedCard = React.memo(({ pageId, userId, username }) => {
   const addHandler = async () => {
+    console.log('seached', userId, 'and', pageId);
     const res = await addUserToPage(userId, pageId);
-    console.log('add page', res.status);
+    console.log('add page', res.data);
   };
   return (
     <>
