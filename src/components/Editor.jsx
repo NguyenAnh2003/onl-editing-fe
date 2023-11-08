@@ -1,7 +1,8 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Menubar } from 'primereact/menubar';
+import React, { Fragment, useContext, useEffect, useRef, useState } from 'react';
 import { initSocket } from '../socket';
 import ACTIONS from '../actions';
 import { UserContext } from '../store/UserProvider';
@@ -16,6 +17,10 @@ import QuillCursors from 'quill-cursors';
 import { getDataByPageId } from '../libs/page.api';
 import { searchUser } from '../libs/user.api';
 import UserSearchedCard from './UserSearchedCard';
+import { AvatarGroup } from 'primereact/avatargroup';
+import { Tooltip } from 'primereact/tooltip';
+import { Avatar } from 'primereact/avatar';
+import { Tag } from 'primereact/tag';
 /** Register cursor */
 Quill.register('modules/cursors', QuillCursors);
 
@@ -169,11 +174,30 @@ const Editor = React.memo(({ pageId }) => {
   return (
     <div>
       <p className="text-center text-2xl pt-3">
-        <b className="">Page name: </b>
-        {data.name}
+        <b className="underline">{data.name}</b>
       </p>
       <div className="flex flex-row justify-between pl-3 pr-3 pb-4">
-        <div> Users joined: {group && group.map((i) => <UserCard key={i.socketId} name={i.name} socketId={i.socketId} />)}</div>
+        <div>
+          <Menubar
+            model={[]}
+            start={
+              <AvatarGroup>
+                {group.map((i) => (
+                  <Fragment key={i.socketId}>
+                    <Tooltip target={`#avatar_${i.socketId}`} content={i.name} position="top"></Tooltip>
+                    <Avatar
+                      id={`avatar_${i.socketId}`}
+                      label={i.name.charAt(0)}
+                      shape="circle"
+                      style={{ backgroundColor: i.color }}
+                      className="transition-all	transition-duration-200 border-2 border-transparent"
+                    />
+                  </Fragment>
+                ))}
+              </AvatarGroup>
+            }
+          />
+        </div>
         {/* textfield search for users to add to pageId */}
         <div className="flex flex-col">
           <div>
