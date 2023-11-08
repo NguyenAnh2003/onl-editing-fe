@@ -118,7 +118,7 @@ const MainEditPage = () => {
         )}
       </PopupState>
       <div className="mx-auto pl-5 pr-5 grid grid-cols-12 gap-2 h-screen">
-        <div className="col-span-12 w-4/3 h-full rounded border border-gray-400 bg-gray-200 sm:col-span-4">
+        <div className="pl-2 pr-2 col-span-12 w-4/3 h-full rounded border border-gray-400 bg-gray-200 sm:col-span-4">
           {/* currentUser pages (owner)
           col for pages
          */}
