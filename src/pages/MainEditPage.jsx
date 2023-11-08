@@ -124,7 +124,7 @@ const MainEditPage = () => {
          */}
           <p className="text-xl font-bold pb-5">Your pages</p>
           {listPage && listPage ? (
-            <div className="w-full gap-4 flex flex-col">
+            <div className="w-full gap-1 flex flex-col">
               {listPage.map((i, index) => (
                 <div>
                   {' '}
