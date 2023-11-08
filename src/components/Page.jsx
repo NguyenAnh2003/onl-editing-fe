@@ -9,15 +9,15 @@ const Page = React.memo(({ setPageId, _id, name }) => {
   };
 
   return (
-    <>
-      <li onClick={selectHandler} className="pb-3 sm:pb-4">
+    <div>
+      <div onClick={selectHandler} className="w-full cursor-pointer">
         <div className="flex items-center space-x-4">
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium bg-gray-500">{name}</p>
+          <div className="flex-1 w-fit">
+            <p className="text-lg font-bold bg-gray-500 pt-5 pb-5 pl-3">{name}</p>
           </div>
         </div>
-      </li>
-    </>
+      </div>
+    </div>
   );
 });
 

@@ -6,6 +6,8 @@ import EditPage from './pages/EditPage';
 import MainEditPage from './pages/MainEditPage';
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
+import { useContext } from 'react';
+import { UserContext } from './store/UserProvider';
 
 const router = createBrowserRouter([
   {
@@ -37,6 +39,8 @@ const router = createBrowserRouter([
 ]);
 
 const AppRoute = () => {
+  const { currentUser } = useContext(UserContext);
+  console.log(currentUser);
   return <RouterProvider router={router} />;
 };
 

@@ -14,7 +14,6 @@ import PopupState, { bindToggle, bindPopper } from 'material-ui-popup-state';
 import Fade from '@mui/material/Fade';
 import Paper from '@mui/material/Paper';
 import Editor from '../components/Editor';
-import axiosConfig from '../config/api.config';
 
 /**
  * page list
@@ -66,11 +65,11 @@ const MainEditPage = () => {
         const responseColabs = [];
         await Promise.all(
           res.data.map(async (i) => {
-            const colabPages = await getDataByPageId(i.pageId)
+            const colabPage = await getDataByPageId(i.pageId)
               .then((res) => res.data)
               .catch((err) => console.error(err));
             /** set colab pages */
-            responseColabs.push(colabPages);
+            responseColabs.push(colabPage);
           })
         );
         console.log('response colabs', responseColabs);
@@ -97,33 +96,35 @@ const MainEditPage = () => {
 
   return (
     <div>
-      <div className="">
-        <div className="">
-          {/* Modal */}
-          <PopupState variant="popper" popupId="demo-popup-popper">
-            {(popupState) => (
-              <div>
-                <Button variant="contained" {...bindToggle(popupState)}>
-                  Create new Page
-                </Button>
-                <Popper {...bindPopper(popupState)} transition>
-                  {({ TransitionProps }) => (
-                    <Fade {...TransitionProps} timeout={350}>
-                      <Paper>
-                        <Typography sx={{ p: 2 }}>Name of your Page</Typography>
-                        <input ref={pageName} />
-                        <button onClick={createPageHandler}>Create</button>
-                      </Paper>
-                    </Fade>
-                  )}
-                </Popper>
-              </div>
-            )}
-          </PopupState>
-          {/* currentUser pages (owner) */}
-          Your pages
-          {listPage ? (
-            <div className="max-w-xs ">
+      {/* Modal */}
+      <PopupState variant="popper" popupId="demo-popup-popper">
+        {(popupState) => (
+          <div>
+            <Button variant="contained" {...bindToggle(popupState)}>
+              Create new Page
+            </Button>
+            <Popper {...bindPopper(popupState)} transition>
+              {({ TransitionProps }) => (
+                <Fade {...TransitionProps} timeout={350}>
+                  <Paper>
+                    <Typography sx={{ p: 2 }}>Name of your Page</Typography>
+                    <input ref={pageName} />
+                    <button onClick={createPageHandler}>Create</button>
+                  </Paper>
+                </Fade>
+              )}
+            </Popper>
+          </div>
+        )}
+      </PopupState>
+      <div className="mx-auto pl-5 pr-5 grid grid-cols-12 gap-2 h-screen">
+        <div className="col-span-12 w-4/3 h-full rounded border border-gray-400 bg-gray-200 sm:col-span-4">
+          {/* currentUser pages (owner)
+          col for pages
+         */}
+          <p className="text-xl font-bold pb-5">Your pages</p>
+          {listPage && listPage ? (
+            <div className="w-full gap-4 flex flex-col">
               {listPage.map((i, index) => (
                 <div>
                   {' '}
@@ -132,12 +133,12 @@ const MainEditPage = () => {
               ))}
             </div>
           ) : (
-            <p>None</p>
+            <p className="text-xl">Create your own page</p>
           )}
           {/* colab pages */}
-          Your colab pages
-          {colabPage ? (
-            <div className="max-w-xs divide-y">
+          <p className="text-xl font-bold pt-3 pb-5">Your colab pages</p>
+          {colabPage && colabPage ? (
+            <div className="w-full divide-y gap-4 flex flex-col">
               {colabPage.map((i, index) => (
                 <div>
                   {' '}
@@ -146,11 +147,13 @@ const MainEditPage = () => {
               ))}
             </div>
           ) : (
-            <p>Don't have colab pages yet</p>
+            <p className="text-xl font-bold ">Don't have colab pages yet</p>
           )}
         </div>
-
-        <div className="">{pageId ? <Editor pageId={pageId} /> : <>Leave</>}</div>
+        {/** Editor component */}
+        <div className="w-5/7 h-full col-span-12 rounded border border-gray-500 bg-gray-200 sm:col-span-8">
+          {pageId ? <Editor pageId={pageId} /> : <>Click 1 page for editing</>}
+        </div>
       </div>
     </div>
   );

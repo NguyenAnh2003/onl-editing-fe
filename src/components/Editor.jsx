@@ -46,7 +46,12 @@ const Editor = React.memo(({ pageId }) => {
 
   /** init socket - change correspond to pageId*/
   useEffect(() => {
-    const initConnection = async () => {
+    /**
+     * Init connection first with user join
+     * after that listening every event from client
+     * including disconnect
+     */
+    const onConnection = async () => {
       socketRef.current = await initSocket();
 
       /** Join pageId request */
@@ -97,7 +102,7 @@ const Editor = React.memo(({ pageId }) => {
     };
 
     /** function call init */
-    initConnection();
+    onConnection();
     /** function call REST */
     fetchData();
 
@@ -115,8 +120,8 @@ const Editor = React.memo(({ pageId }) => {
     cursorRef.current = editorRef.current?.editor?.getModule('cursors');
     if (userWs && cursorRef.current && currentUser) {
       console.log(userWs);
-      cursorRef.current?.createCursor(userWs.socketId, userWs.name, "#0000");
-    }    
+      cursorRef.current?.createCursor(userWs.socketId, userWs.name, '#0000');
+    }
   }, [cursorRef, userWs, currentUser]);
 
   /** init clients cursors */
@@ -163,14 +168,18 @@ const Editor = React.memo(({ pageId }) => {
 
   return (
     <div>
-      <p>
-        <b>Page name: </b>
+      <p className="text-center text-2xl pt-3">
+        <b className="">Page name: </b>
         {data.name}
       </p>
-      <div> Users joined: {group && group.map((i) => <UserCard key={i.socketId} name={i.name} socketId={i.socketId} />)}</div>
-      {/* textfield search for users to add to pageId */}
-      <input ref={searchUserRef} placeholder="Search to add" />
-      <button onClick={searchHandler}>Search</button>
+      <div className='flex flex-row justify-between pl-3 pr-3 pb-4'>
+        <div> Users joined: {group && group.map((i) => <UserCard key={i.socketId} name={i.name} socketId={i.socketId} />)}</div>
+        {/* textfield search for users to add to pageId */}
+        <div>
+          <input ref={searchUserRef} placeholder="Search to add" />
+          <button onClick={searchHandler}>Search</button>
+        </div>
+      </div>
       {userSearched ? <UserSearchedCard pageId={pageId} userId={userSearched.userId} username={userSearched.username} /> : <></>}
       {/* React Quill Editor */}
       <ReactQuill
