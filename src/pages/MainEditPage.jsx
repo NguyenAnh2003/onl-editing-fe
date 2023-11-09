@@ -95,33 +95,32 @@ const MainEditPage = () => {
   };
 
   return (
-    <div>
+    <div className="">
       {/* Modal */}
-      <PopupState variant="popper" popupId="demo-popup-popper">
-        {(popupState) => (
-          <div>
-            <Button variant="contained" {...bindToggle(popupState)}>
-              Create new Page
-            </Button>
-            <Popper {...bindPopper(popupState)} transition>
-              {({ TransitionProps }) => (
-                <Fade {...TransitionProps} timeout={350}>
-                  <Paper>
-                    <Typography sx={{ p: 2 }}>Name of your Page</Typography>
-                    <input ref={pageName} />
-                    <button onClick={createPageHandler}>Create</button>
-                  </Paper>
-                </Fade>
-              )}
-            </Popper>
-          </div>
-        )}
-      </PopupState>
+      <div className="relative top-1 mb-3 ml-5">
+        <PopupState variant="popper" popupId="demo-popup-popper">
+          {(popupState) => (
+            <div className="left-5">
+              <Button  variant="contained" {...bindToggle(popupState)}>
+                Create new Page
+              </Button>
+              <Popper {...bindPopper(popupState)} transition>
+                {({ TransitionProps }) => (
+                  <Fade {...TransitionProps} timeout={350}>
+                    <Paper>
+                      <Typography sx={{ p: 2 }}>Name of your Page</Typography>
+                      <input ref={pageName} />
+                      <button onClick={createPageHandler}>Create</button>
+                    </Paper>
+                  </Fade>
+                )}
+              </Popper>
+            </div>
+          )}
+        </PopupState>
+      </div>
       <div className="mx-auto pl-5 pr-5 grid grid-cols-12 gap-2 h-screen">
         <div className="pl-2 pr-2 col-span-12 w-4/3 h-full rounded border border-gray-400 bg-gray-200 sm:col-span-4">
-          {/* currentUser pages (owner)
-          col for pages
-         */}
           <p className="text-xl font-bold pb-5">Your pages</p>
           {listPage && listPage ? (
             <div className="w-full gap-1 flex flex-col">
