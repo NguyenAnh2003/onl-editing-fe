@@ -16,7 +16,7 @@ const Page = React.memo(({ setPageId, _id, name }) => {
           <div className="flex flex-row w-full bg-white items-center pl-3">
             <GrDocumentText size={24}/>
             <div className='w-full'>
-              <p className="text-lg font-bold pt-5 pb-5 pl-3">{name}</p>
+              <p className="text-lg font-semibold pt-5 pb-5 pl-3">{name}</p>
             </div>
           </div>
           {/** Icon */}
