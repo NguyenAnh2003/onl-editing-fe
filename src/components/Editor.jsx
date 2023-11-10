@@ -10,7 +10,9 @@ import { UserContext } from '../store/UserProvider';
 import ReactQuill, { Quill } from 'react-quill';
 import { formats, module } from '../config/quill.config';
 import 'react-quill/dist/quill.snow.css';
-
+/** Pdf export */
+import { pdfExporter } from 'quill-to-pdf';
+import { saveAs } from 'file-saver';
 /** Cursor */
 import QuillCursors from 'quill-cursors';
 import { getDataByPageId } from '../libs/page.api';
@@ -170,6 +172,13 @@ const Editor = React.memo(({ pageId }) => {
     setUserSearched(res.data);
   };
 
+  /** export PDF */
+  const exportPDFHandler = async () => {
+    const delta = editorRef.current.editor.getContents();
+    const pdfAsBlob = await pdfExporter.generatePdf(delta);
+    saveAs(pdfAsBlob, `${data.name}.pdf`);
+  };
+
   return (
     <div>
       <p className="text-center text-2xl pt-3">
@@ -197,39 +206,47 @@ const Editor = React.memo(({ pageId }) => {
             }
           />
         </div>
-        {/* textfield search for users to add to pageId */}
-        <div className="flex flex-col">
-          <div>
-            <form className="flex items-center">
-              <div className="w-full">
-                <input
-                  type="text"
-                  ref={searchUserRef}
-                  id="simple-search"
-                  className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  focus:outline-none block w-full pl-5 p-2.5"
-                  placeholder="Search branch name..."
-                  required
-                />
-              </div>
-              <button
-                type="button"
-                onClick={searchHandler}
-                className="p-2.5 ml-2 text-sm font-medium text-white bg-black rounded-lg border border-black focus:outline-none "
-              >
-                <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                  <path
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+        <div className="flex flex-row gap-2">
+          <button
+            onClick={exportPDFHandler}
+            className="p-2.5 pl-5 pr-5 ml-2 text-sm font-medium text-white bg-black rounded-lg border border-black focus:outline-none "
+          >
+            PDF
+          </button>
+          {/* textfield search for users to add to pageId */}
+          <div className="flex flex-col">
+            <div>
+              <form className="flex items-center">
+                <div className="w-full">
+                  <input
+                    type="text"
+                    ref={searchUserRef}
+                    id="simple-search"
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  focus:outline-none block w-full pl-5 p-2.5"
+                    placeholder="Search branch name..."
+                    required
                   />
-                </svg>
-                <span className="sr-only">Search</span>
-              </button>
-            </form>
+                </div>
+                <button
+                  type="button"
+                  onClick={searchHandler}
+                  className="p-2.5 ml-2 text-sm font-medium text-white bg-black rounded-lg border border-black focus:outline-none "
+                >
+                  <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                    <path
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                    />
+                  </svg>
+                  <span className="sr-only">Search</span>
+                </button>
+              </form>
+            </div>
+            {userSearched ? <UserSearchedCard pageId={pageId} userId={userSearched.userId} username={userSearched.username} /> : <></>}
           </div>
-          {userSearched ? <UserSearchedCard pageId={pageId} userId={userSearched.userId} username={userSearched.username} /> : <></>}
         </div>
       </div>
       {/* React Quill Editor */}
