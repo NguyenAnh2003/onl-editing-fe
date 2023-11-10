@@ -6,7 +6,6 @@ import React, { Fragment, useContext, useEffect, useRef, useState } from 'react'
 import { initSocket } from '../socket';
 import ACTIONS from '../actions';
 import { UserContext } from '../store/UserProvider';
-import UserCard from './UserCard';
 /** ReactQuill config */
 import ReactQuill, { Quill } from 'react-quill';
 import { formats, module } from '../config/quill.config';
