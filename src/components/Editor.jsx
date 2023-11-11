@@ -181,7 +181,7 @@ const Editor = React.memo(({ pageId }) => {
 
   return (
     <div>
-      <p className="text-center text-2xl pt-3">
+      <p className="text-center text-2xl pt-3 mb-9">
         <b className="underline">{data.name}</b>
       </p>
       <div className="flex flex-row justify-between pl-3 pr-3 pb-4">
