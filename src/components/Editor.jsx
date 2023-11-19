@@ -15,7 +15,6 @@ import { pdfExporter } from 'quill-to-pdf';
 import { saveAs } from 'file-saver';
 /** Cursor */
 import QuillCursors from 'quill-cursors';
-import { getDataByPageId } from '../libs/page.api';
 import { searchUser } from '../libs/user.api';
 import UserSearchedCard from './UserSearchedCard';
 import { AvatarGroup } from 'primereact/avatargroup';
@@ -73,6 +72,12 @@ const Editor = React.memo(({ pageId }) => {
         setGroup(clients);
       });
 
+      /** load page */
+      socketRef.current.once(ACTIONS.LOAD_DOC, ({ data }) => {
+        console.log(data);
+        setData(data);
+      });
+
       /** onTextChange */
       socketRef.current.on(ACTIONS.TEXT_CHANGE, ({ content, client: senderClient }) => {
         if (currentUser.username !== senderClient) {
@@ -97,20 +102,8 @@ const Editor = React.memo(({ pageId }) => {
         cursorRef.current.removeCursor(socketId);
       });
     };
-
-    /** REST fetch page Data */
-    const fetchData = async () => {
-      const res = await getDataByPageId(pageId);
-      console.log('page data', res.data);
-      if (res.status === 200) {
-        setData(res.data);
-      }
-    };
-
     /** function call init */
     onConnection();
-    /** function call REST */
-    fetchData();
 
     /** remove state */
     return () => {
@@ -255,6 +248,7 @@ const Editor = React.memo(({ pageId }) => {
         ref={editorRef}
         modules={module}
         formats={formats}
+        value={data.content}
         onChange={textChangeHandler}
         onChangeSelection={selectionChangeHandler}
       />
