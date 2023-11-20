@@ -30,7 +30,7 @@ Quill.register('modules/cursors', QuillCursors);
  * get data from server
  * get page with pageId
  */
-const Editor = React.memo(({ pageId }) => {
+const Editor = ({ pageId }) => {
   const socketRef = useRef(null);
   /** currentUser */
   const { currentUser } = useContext(UserContext);
@@ -56,6 +56,7 @@ const Editor = React.memo(({ pageId }) => {
      * after that listening every event from client
      * including disconnect
      */
+    console.log('pageId', pageId);
     const onConnection = async () => {
       socketRef.current = await initSocket();
 
@@ -70,12 +71,17 @@ const Editor = React.memo(({ pageId }) => {
       socketRef.current.on(ACTIONS.JOINED, ({ clients, userJoined }) => {
         setUserWs({ socketId: userJoined.socketId, name: userJoined.name, color: userJoined.color }); //
         setGroup(clients);
+        // setData({ name: data.name, content: data.content });
       });
 
       /** load page */
-      socketRef.current.once(ACTIONS.LOAD_DOC, ({ data }) => {
+      socketRef.current.on(ACTIONS.LOAD_DOC, ({ data }) => {
         console.log(data);
-        setData(data);
+        setData({ name: data.name, content: data.content });
+
+        if (data.content) {
+          editorRef.current?.editor.setContents(data.content);
+        }
       });
 
       /** onTextChange */
@@ -104,6 +110,7 @@ const Editor = React.memo(({ pageId }) => {
     };
     /** function call init */
     onConnection();
+    console.log('init connection', data && data.content);
 
     /** remove state */
     return () => {
@@ -112,7 +119,7 @@ const Editor = React.memo(({ pageId }) => {
       socketRef.current.off(ACTIONS.DISCONNECTED);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageId]);
+  }, [pageId, socketRef]);
 
   useEffect(() => {
     /** init currentUser cursor */
@@ -121,7 +128,7 @@ const Editor = React.memo(({ pageId }) => {
       console.log(userWs);
       cursorRef.current?.createCursor(userWs.socketId, userWs.name, '#0000');
     }
-  }, [cursorRef, userWs, currentUser]);
+  }, [cursorRef, userWs]);
 
   /** init clients cursors */
   useEffect(() => {
@@ -248,12 +255,12 @@ const Editor = React.memo(({ pageId }) => {
         ref={editorRef}
         modules={module}
         formats={formats}
-        value={data.content}
+        // value={data.content}
         onChange={textChangeHandler}
         onChangeSelection={selectionChangeHandler}
       />
     </div>
   );
-});
+};
 
 export default Editor;

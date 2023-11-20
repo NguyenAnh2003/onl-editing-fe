@@ -31,12 +31,6 @@ const MainEditPage = () => {
   const { currentUser } = useContext(UserContext);
   const pageName = useRef(null);
 
-  useEffect(() => {
-    if (currentUser === null) {
-      navigate('/signin');
-    }
-  }, []);
-
   /** fetching pages from userId */
   useEffect(() => {
     const fetchData = async () => {
