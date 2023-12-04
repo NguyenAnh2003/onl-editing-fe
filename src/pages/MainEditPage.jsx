@@ -14,6 +14,8 @@ import PopupState, { bindToggle, bindPopper } from 'material-ui-popup-state';
 import Fade from '@mui/material/Fade';
 import Paper from '@mui/material/Paper';
 import Editor from '../components/Editor';
+import { GoHubot } from 'react-icons/go';
+import ChatPanel from '../components/ChatPanel';
 
 /**
  * page list
@@ -30,6 +32,10 @@ const MainEditPage = () => {
   const [colabPage, setColabPages] = useState([]);
   const { currentUser } = useContext(UserContext);
   const pageName = useRef(null);
+  /** open modal */
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   /** fetching pages from userId */
   useEffect(() => {
@@ -88,6 +94,8 @@ const MainEditPage = () => {
     }
   };
 
+  /** ask AI HTTP */
+
   return (
     <div className="">
       {/* Modal */}
@@ -95,7 +103,7 @@ const MainEditPage = () => {
         <PopupState variant="popper" popupId="demo-popup-popper">
           {(popupState) => (
             <div className="left-5">
-              <Button  variant="contained" {...bindToggle(popupState)}>
+              <Button variant="contained" {...bindToggle(popupState)}>
                 Create new Page
               </Button>
               <Popper {...bindPopper(popupState)} transition>
@@ -113,6 +121,14 @@ const MainEditPage = () => {
           )}
         </PopupState>
       </div>
+      {/** ask ai pop up */}
+      <div className="relative -top-4 mb-10 left-80 ml-10 ">
+        <div className="absolute left-36 flex flex-row gap-3">
+          <GoHubot onClick={handleOpen} size={40} className="p-1 border border-solid border-black cursor-pointer" />
+        </div>
+      </div>
+      {/** chat panel */}
+      <ChatPanel open={open} handleClose={handleClose} />
       <div className="mx-auto pl-5 pr-5 grid grid-cols-12 gap-2 h-screen">
         <div className="pl-2 pr-2 col-span-12 w-4/3 h-full rounded border border-gray-400 bg-gray-200 sm:col-span-4">
           <p className="text-xl font-bold pb-5">Your pages</p>

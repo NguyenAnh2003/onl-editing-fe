@@ -8,6 +8,9 @@ const ACTIONS = {
   LOAD_DOC: 'load-doc',
   CURSOR_CHANGE: 'cursor-change',
   LEAVE: 'leave',
+  /** messaging */
+  SEND_MESSAGE: 'send-message',
+  AI_RESPONSE: 'ai-response',
 };
 
 export default ACTIONS;
