@@ -60,7 +60,7 @@ const Editor = ({ pageId }) => {
     const onConnection = async () => {
       socketRef.current = await initSocket();
 
-      console.log(socketRef.current);
+      console.log('from editor', socketRef.current.id);
       /** Join pageId request */
       socketRef.current.emit(ACTIONS.JOIN, {
         roomId: pageId,
