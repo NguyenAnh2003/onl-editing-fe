@@ -122,7 +122,7 @@ const Home = () => {
         </PopupState>
       </div>
       {/** ask ai pop up */}
-      <div className="relative -top-4 mb-10 left-80 ml-10 ">
+      <div className="relative -top-4 mb-10 left-80 ml-10 w-fit">
         <div className="absolute left-36 flex flex-row gap-3">
           <GoHubot onClick={handleOpen} size={40} className="p-1 border border-solid border-black cursor-pointer" />
         </div>
