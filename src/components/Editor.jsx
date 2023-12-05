@@ -16,11 +16,11 @@ import { saveAs } from 'file-saver';
 /** Cursor */
 import QuillCursors from 'quill-cursors';
 import { searchUser } from '../libs/user.api';
-import UserSearchedCard from './UserSearchedCard';
 import { AvatarGroup } from 'primereact/avatargroup';
 import { Tooltip } from 'primereact/tooltip';
 import { Avatar } from 'primereact/avatar';
 import { Tag } from 'primereact/tag';
+import UserCard from './UserCard';
 /** Register cursor */
 Quill.register('modules/cursors', QuillCursors);
 
@@ -246,7 +246,7 @@ const Editor = ({ pageId }) => {
                 </button>
               </form>
             </div>
-            {userSearched ? <UserSearchedCard pageId={pageId} userId={userSearched.userId} username={userSearched.username} /> : <></>}
+            {userSearched ? <UserCard pageId={pageId} userId={userSearched.userId} username={userSearched.username} /> : <></>}
           </div>
         </div>
       </div>

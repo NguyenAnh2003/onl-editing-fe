@@ -1,13 +1,11 @@
 /* eslint-disable no-unused-vars */
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import Layout from './components/layouts/Layout';
-import Home from './pages/Home';
-import EditPage from './pages/EditPage';
-import MainEditPage from './pages/MainEditPage';
 import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import { useContext } from 'react';
 import { UserContext } from './store/UserProvider';
+import Home from './pages/Home';
 
 const router = createBrowserRouter([
   {
@@ -16,14 +14,6 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <MainEditPage />,
-      },
-      {
-        path: 'edit/editor/:roomId',
-        element: <EditPage />,
-      },
-      {
-        path: 'edit',
         element: <Home />,
       },
       {
