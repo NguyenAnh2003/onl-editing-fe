@@ -19,7 +19,6 @@ import { searchUser } from '../libs/user.api';
 import { AvatarGroup } from 'primereact/avatargroup';
 import { Tooltip } from 'primereact/tooltip';
 import { Avatar } from 'primereact/avatar';
-import { Tag } from 'primereact/tag';
 import UserCard from './UserCard';
 /** Register cursor */
 Quill.register('modules/cursors', QuillCursors);
