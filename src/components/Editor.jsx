@@ -20,6 +20,7 @@ import { AvatarGroup } from 'primereact/avatargroup';
 import { Tooltip } from 'primereact/tooltip';
 import { Avatar } from 'primereact/avatar';
 import UserCard from './UserCard';
+
 /** Register cursor */
 Quill.register('modules/cursors', QuillCursors);
 
@@ -117,6 +118,8 @@ const Editor = ({ pageId }) => {
       socketRef.current.disconnect();
       socketRef.current.off(ACTIONS.JOINED);
       socketRef.current.off(ACTIONS.DISCONNECTED);
+      setUserSearched();
+      searchUserRef.current.value = '';
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageId, socketRef]);
@@ -168,13 +171,18 @@ const Editor = ({ pageId }) => {
   /** Search person Handler */
   const searchHandler = async () => {
     /** searching with REST API */
-    const res = await searchUser(searchUserRef.current.value);
-    console.log(res);
-    setUserSearched(res.data);
+    try {
+      const { data } = await searchUser(searchUserRef.current.value);
+      console.log(data);
+      setUserSearched(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   /** export PDF */
   const exportPDFHandler = async () => {
+    /** send delta to server */
     const delta = editorRef.current.editor.getContents();
     const pdfAsBlob = await pdfExporter.generatePdf(delta);
     saveAs(pdfAsBlob, `${data.name}.pdf`);
@@ -210,12 +218,14 @@ const Editor = ({ pageId }) => {
           />
         </div>
         <div className="flex flex-row gap-2">
-          <button
-            onClick={exportPDFHandler}
-            className="p-2.5 pl-5 pr-5 ml-2 text-sm font-medium text-white bg-black rounded-lg border border-black focus:outline-none "
-          >
-            PDF
-          </button>
+          <div>
+            <button
+              onClick={exportPDFHandler}
+              className="p-2.5 pl-5 pr-5 ml-2 text-sm font-medium text-white bg-black rounded-lg border border-black focus:outline-none "
+            >
+              PDF
+            </button>
+          </div>
           {/* textfield search for users to add to pageId */}
           <div className="flex flex-col">
             <div>
@@ -224,10 +234,8 @@ const Editor = ({ pageId }) => {
                   <input
                     type="text"
                     ref={searchUserRef}
-                    id="simple-search"
                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg  focus:outline-none block w-full pl-5 p-2.5"
-                    placeholder="Search branch name..."
-                    required
+                    placeholder="Search by name..."
                   />
                 </div>
                 <button
@@ -248,7 +256,11 @@ const Editor = ({ pageId }) => {
                 </button>
               </form>
             </div>
-            {userSearched ? <UserCard pageId={pageId} userId={userSearched.userId} username={userSearched.username} /> : <></>}
+            {userSearched ? (
+              <UserCard setValue={setUserSearched} pageId={pageId} userId={userSearched.userId} username={userSearched.username} />
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       </div>

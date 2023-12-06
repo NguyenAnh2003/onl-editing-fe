@@ -6,7 +6,7 @@
 import { postHTTP } from '../config/api.config';
 
 /** upload file including spaceId */
-export const uploadFile = (spaceId, file) => {
-  const res = postHTTP('/url', { spaceId, file });
+export const exportPDF = (delta) => {
+  const res = postHTTP('/url', { delta });
   return res;
 };
