@@ -135,7 +135,7 @@ const Home = () => {
           {listPage && listPage ? (
             <div className="w-full gap-1 flex flex-col">
               {listPage.map((i, index) => (
-                <div>
+                <div key={index}>
                   {' '}
                   <Page key={index} setPageId={setPageId} name={i.name} _id={i._id} />
                 </div>
@@ -149,7 +149,7 @@ const Home = () => {
           {colabPage && colabPage ? (
             <div className="w-full divide-y gap-4 flex flex-col">
               {colabPage.map((i, index) => (
-                <div>
+                <div key={index}>
                   {' '}
                   <Page key={index} setPageId={setPageId} name={i.name} _id={i._id} />
                 </div>

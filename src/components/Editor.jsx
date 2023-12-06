@@ -70,7 +70,7 @@ const Editor = ({ pageId }) => {
 
       /** Joined pageId res */
       socketRef.current.on(ACTIONS.JOINED, ({ clients, userJoined }) => {
-        setUserWs({ socketId: userJoined.socketId, name: userJoined.name, color: userJoined.color }); //
+        setUserWs({ socketId: userJoined.socketId, name: userJoined.name, color: userJoined.color, userId: userJoined.usreId }); //
         setGroup(clients);
         // setData({ name: data.name, content: data.content });
       });
@@ -133,6 +133,7 @@ const Editor = ({ pageId }) => {
 
   /** init clients cursors */
   useEffect(() => {
+    console.log(group);
     group.forEach(({ socketId, name, color }) => {
       cursorRef.current.createCursor(socketId, name, color);
     });
@@ -191,18 +192,20 @@ const Editor = ({ pageId }) => {
             model={[]}
             start={
               <AvatarGroup>
-                {group.map((i) => (
-                  <Fragment key={i.socketId}>
-                    <Tooltip target={`#avatar_${i.socketId}`} content={i.name} position="top"></Tooltip>
-                    <Avatar
-                      id={`avatar_${i.socketId}`}
-                      label={i.name.charAt(0)}
-                      shape="circle"
-                      style={{ backgroundColor: i.color }}
-                      className="transition-all	transition-duration-200 border-2 border-transparent text-white"
-                    />
-                  </Fragment>
-                ))}
+                {group
+                  .filter((x) => x.userId !== currentUser.userId)
+                  .map((i) => (
+                    <Fragment key={i.socketId}>
+                      <Tooltip target={`#avatar_${i.socketId}`} content={i.name} position="top"></Tooltip>
+                      <Avatar
+                        id={`avatar_${i.socketId}`}
+                        label={i.name.charAt(0)}
+                        shape="circle"
+                        style={{ backgroundColor: i.color }}
+                        className="transition-all	transition-duration-200 border-2 border-transparent text-white"
+                      />
+                    </Fragment>
+                  ))}
               </AvatarGroup>
             }
           />
