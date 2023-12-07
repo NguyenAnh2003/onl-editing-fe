@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
@@ -20,7 +21,10 @@ import { AvatarGroup } from 'primereact/avatargroup';
 import { Tooltip } from 'primereact/tooltip';
 import { Avatar } from 'primereact/avatar';
 import UserCard from './UserCard';
-
+/** Toaster */
+import { Toaster } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
+import { exportPDF } from '../libs/file.api';
 /** Register cursor */
 Quill.register('modules/cursors', QuillCursors);
 
@@ -41,7 +45,7 @@ const Editor = ({ pageId }) => {
   /** search user Ref */
   const searchUserRef = useRef(null);
   /** set Page data */
-  const [data, setData] = useState({});
+  const [pageData, setPageData] = useState({});
   /** set user after searched */
   const [userSearched, setUserSearched] = useState({});
   /** Cursor */
@@ -78,7 +82,7 @@ const Editor = ({ pageId }) => {
       /** load page */
       socketRef.current.on(ACTIONS.LOAD_DOC, ({ data }) => {
         console.log(data);
-        setData({ name: data.name, content: data.content });
+        setPageData({ name: data.name, content: data.content });
 
         if (data.content) {
           editorRef.current?.editor.setContents(data.content);
@@ -111,7 +115,7 @@ const Editor = ({ pageId }) => {
     };
     /** function call init */
     onConnection();
-    console.log('init connection', data && data.content);
+    console.log('init connection', pageData && pageData.content);
 
     /** remove state */
     return () => {
@@ -184,14 +188,20 @@ const Editor = ({ pageId }) => {
   const exportPDFHandler = async () => {
     /** send delta to server */
     const delta = editorRef.current.editor.getContents();
-    const pdfAsBlob = await pdfExporter.generatePdf(delta);
-    saveAs(pdfAsBlob, `${data.name}.pdf`);
+    const { data, status } = await exportPDF(delta, pageData.name);
+    console.log(status);
+    console.log(data);
+    if (status === 200) {
+      saveAs(data, `${pageData.name}.pdf`);
+    }
   };
 
   return (
     <div>
+      {/** Toaster */}
+      <Toaster reverseOrder={false} position="top-right" />
       <p className="text-center text-2xl pt-3 mb-9">
-        <b className="underline">{data.name}</b>
+        <b className="underline">{pageData.name}</b>
       </p>
       <div className="flex flex-row justify-between pl-3 pr-3 pb-4">
         <div>

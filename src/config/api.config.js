@@ -12,8 +12,8 @@ const axiosConfig = axios.create({
  * POST and GET
  */
 
-export const postHTTP = async (url, params = {}) => {
-  const res = await axiosConfig.post(url, params).catch((e) => {
+export const postHTTP = async (url, params = {}, options) => {
+  const res = await axiosConfig.post(url, params, options).catch((e) => {
     const errorResponse = {
       data: e.response.data,
       status: e.response.status,
@@ -24,7 +24,7 @@ export const postHTTP = async (url, params = {}) => {
     data: res.data,
     status: res.status,
     headers: res.headers,
-  }; 
+  };
 };
 
 export const getHTTP = async (url) => {
