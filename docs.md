@@ -19,6 +19,9 @@ word-extractor: https://www.npmjs.com/package/word-extractor
 
 Quill cursor : https://www.npmjs.com/package/quill-cursors
 
+## upload image and embed
+https://stackoverflow.com/questions/59602182/quill-add-image-url-instead-of-uploading-it 
+
 ### Theory
 p2p steps:
 + Agree to begin communication

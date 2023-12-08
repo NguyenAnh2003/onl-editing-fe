@@ -2,7 +2,8 @@ import { Backdrop, Box, Fade, Modal, Typography } from '@mui/material';
 import React, { useEffect, useRef, useState } from 'react';
 import { initSocket } from '../socket';
 import ACTIONS from '../actions';
-
+import { Toaster } from 'react-hot-toast';
+import { toast } from 'react-hot-toast';
 const style = {
   position: 'absolute',
   top: '40%',
@@ -33,9 +34,14 @@ const ChatPanel = ({ open, handleClose }) => {
       // socket.current.on(ACTIONS.DISCONNECTED, { socketId: socket.current.id });
 
       /** ai response */
-      socket.current.on(ACTIONS.AI_RESPONSE, async ({ response, sessionId }) => {
-        console.log('from ai', response, 'session id', sessionId);
-        setListMess((prev) => [...prev, response]);
+      socket.current.on(ACTIONS.AI_RESPONSE, async ({ responseData }) => {
+        const { response, sessionId } = responseData;
+        if (response && sessionId) {
+          console.log('from ai', response, 'session id', sessionId);
+          setListMess((prev) => [...prev, response]);
+        } else {
+          toast.error('Cannot get response')
+        }
       });
     };
 
@@ -67,6 +73,7 @@ const ChatPanel = ({ open, handleClose }) => {
 
   return (
     <div>
+      <Toaster reverseOrder={false} position='top-right'/>
       {/** socket init */}
       <Modal
         aria-labelledby="transition-modal-title"
@@ -90,7 +97,9 @@ const ChatPanel = ({ open, handleClose }) => {
               {/** message */}
               <div>
                 {listMess.map((i, index) => (
-                  <p key={index}>{i.role}: {i.content}</p>
+                  <p key={index}>
+                    {i?.role}: {i?.content}
+                  </p>
                 ))}
               </div>
               {/** input */}
