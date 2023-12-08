@@ -12,9 +12,13 @@ const UserCard = React.memo(({ pageId, userId, username, setValue }) => {
   const addHandler = async () => {
     try {
       console.log('seached', userId, 'and', pageId);
-      const res = await addUserToPage(userId, pageId);
-      console.log('add page', res.data);
-      toast.success('Success in adding');
+      const { data, status } = await addUserToPage(userId, pageId);
+      if (status === 200) {
+        console.log('add page', data);
+        toast.success('Success in adding');
+      } else {
+        toast.error(data)
+      }
     } catch (error) {
       console.error(error);
       toast.error(error.data);

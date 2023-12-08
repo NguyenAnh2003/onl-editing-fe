@@ -8,53 +8,42 @@ const axiosConfig = axios.create({
   },
 });
 
+axiosConfig.interceptors.response.use(
+  (config) => {
+    const responseData = {
+      data: config.data,
+      status: config.status,
+      headers: config.headers,
+    };
+    return responseData;
+  },
+  (err) => {
+    const errorResponse = {
+      data: err.response.data,
+      status: err.response.status,
+      headers: err.response.headers,
+    };
+    return errorResponse;
+  }
+);
+
 /**
  * POST and GET
  */
 
 export const postHTTP = async (url, params = {}, options) => {
-  const res = await axiosConfig.post(url, params, options).catch((e) => {
-    const errorResponse = {
-      data: e.response.data,
-      status: e.response.status,
-    };
-    return Promise.reject(errorResponse);
-  });
-  return {
-    data: res.data,
-    status: res.status,
-    headers: res.headers,
-  };
+  const res = await axiosConfig.post(url, params, options);
+  return res;
 };
 
 export const getHTTP = async (url) => {
-  const res = await axiosConfig.get(url).catch((e) => {
-    const errorResponse = {
-      data: e.response.data,
-      status: e.response.status,
-    };
-    return Promise.reject(errorResponse);
-  });
-  return {
-    data: res.data,
-    status: res.status,
-    headers: res.headers,
-  };
+  const res = await axiosConfig.get(url);
+  return res;
 };
 
 export const deleteHTTP = async (url) => {
-  const res = await axiosConfig.delete(url).catch((e) => {
-    const errorResponse = {
-      data: e.response.data,
-      status: e.response.status,
-    };
-    return Promise.reject(errorResponse);
-  });
-  return {
-    data: res.data,
-    status: res.status,
-    headers: res.headers,
-  };
+  const res = await axiosConfig.delete(url);
+  return res;
 };
 
 export default axiosConfig;

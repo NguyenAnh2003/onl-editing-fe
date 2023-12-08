@@ -35,15 +35,15 @@ const ChatPanel = ({ open, handleClose }) => {
       /** ai response */
       socket.current.on(ACTIONS.AI_RESPONSE, async ({ response, sessionId }) => {
         console.log('from ai', response, 'session id', sessionId);
-        setListMess((prev) => [...prev, response?.content]);
+        setListMess((prev) => [...prev, response]);
       });
     };
 
     onConnection();
- 
+
     return () => {
       socket.current.disconnect();
-      setListMess([])
+      setListMess([]);
     };
   }, [open]);
 
@@ -51,9 +51,17 @@ const ChatPanel = ({ open, handleClose }) => {
     if (e.key === 'Enter') {
       /** set current message */
       console.log(message.current.value);
-      setListMess((prev) => [...prev, message.current.value]);
+      const messageSending = {
+        content: message.current.value,
+        role: 'user',
+      };
+      console.log(messageSending);
+      setListMess((prev) => [...prev, messageSending]);
       /** socket emit */
-      socket.current.emit(ACTIONS.SEND_MESSAGE, { message: message.current.value, sessionId: socket.current.id });
+      socket.current.emit(ACTIONS.SEND_MESSAGE, {
+        messageSending,
+        sessionId: socket.current.id,
+      });
     }
   };
 
@@ -82,11 +90,16 @@ const ChatPanel = ({ open, handleClose }) => {
               {/** message */}
               <div>
                 {listMess.map((i, index) => (
-                  <p key={index}>{i}</p>
+                  <p key={index}>{i.role}: {i.content}</p>
                 ))}
               </div>
               {/** input */}
-              <input ref={message} onKeyDown={keyPressHandler} className="absolute bottom-8 pt-2 pb-2 pl-1 w-[332px]" placeholder="Enter message" />
+              <input
+                ref={message}
+                onKeyDown={keyPressHandler}
+                className="absolute bottom-8 pt-2 pb-2 pl-1 w-[332px]"
+                placeholder="Enter message"
+              />
             </div>
           </Box>
         </Fade>
