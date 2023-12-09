@@ -8,6 +8,18 @@ const axiosConfig = axios.create({
   },
 });
 
+axiosConfig.interceptors.request.use(
+  (config) => {
+    if (config.url.includes('/upload')) {
+      config.headers['Content-Type'] = 'multipart/form-data';
+    }
+    return config;
+  },
+  (err) => {
+    return err;
+  }
+);
+
 axiosConfig.interceptors.response.use(
   (config) => {
     const responseData = {
