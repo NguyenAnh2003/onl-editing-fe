@@ -3,13 +3,21 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
 import { Menubar } from 'primereact/menubar';
-import React, { Fragment, useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  Fragment,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { initSocket } from '../socket';
 import ACTIONS from '../actions';
 import { UserContext } from '../store/UserProvider';
 /** ReactQuill config */
 import ReactQuill, { Quill } from 'react-quill';
-import { formats, module } from '../config/quill.config';
+import { formats, module as basedModule, module } from '../config/quill.config';
 import 'react-quill/dist/quill.snow.css';
 /** Pdf export */
 import { pdfExporter } from 'quill-to-pdf';
@@ -21,12 +29,14 @@ import { AvatarGroup } from 'primereact/avatargroup';
 import { Tooltip } from 'primereact/tooltip';
 import { Avatar } from 'primereact/avatar';
 import UserCard from './UserCard';
+import { ImageHandler } from 'quill-upload';
 /** Toaster */
 import { Toaster } from 'react-hot-toast';
 import { toast } from 'react-hot-toast';
 import { exportPDF } from '../libs/file.api';
 /** Register cursor */
 Quill.register('modules/cursors', QuillCursors);
+// Quill.register('modules/imageHandler', ImageHandler);
 
 /**
  * init socket
@@ -53,6 +63,8 @@ const Editor = ({ pageId }) => {
   /** user WS */
   const [userWs, setUserWs] = useState({});
 
+  console.log(basedModule);
+
   /** init socket - change correspond to pageId*/
   useEffect(() => {
     /**
@@ -60,11 +72,9 @@ const Editor = ({ pageId }) => {
      * after that listening every event from client
      * including disconnect
      */
-    console.log('pageId', pageId);
     const onConnection = async () => {
       socketRef.current = await initSocket();
 
-      console.log('from editor', socketRef.current.id);
       /** Join pageId request */
       socketRef.current.emit(ACTIONS.JOIN, {
         roomId: pageId,
@@ -74,7 +84,12 @@ const Editor = ({ pageId }) => {
 
       /** Joined pageId res */
       socketRef.current.on(ACTIONS.JOINED, ({ clients, userJoined }) => {
-        setUserWs({ socketId: userJoined.socketId, name: userJoined.name, color: userJoined.color, userId: userJoined.usreId }); //
+        setUserWs({
+          socketId: userJoined.socketId,
+          name: userJoined.name,
+          color: userJoined.color,
+          userId: userJoined.usreId,
+        }); //
         setGroup(clients);
         // setData({ name: data.name, content: data.content });
       });
@@ -128,18 +143,59 @@ const Editor = ({ pageId }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageId, socketRef]);
 
+  const uploadHandler = useCallback(() => {
+    return new Promise((resolve, reject) => {
+      const input = document.createElement('input');
+      input.setAttribute('type', 'file');
+      input.setAttribute('accept', 'image/*');
+      input.click();
+
+      input.onchange = () => {
+        if (input.files[0]) {
+          const file = input.files[0];
+          console.log(file);
+          /** socket emit */
+          socketRef.current.emit('upload', { file, filename: file.name, pageId });
+
+          socketRef.current.on('upload', ({ imageURL }) => {
+            console.log(imageURL);
+            const range = editorRef.current?.editor.getSelection();
+            range && editorRef.current?.editor?.insertEmbed(range.index, 'image', imageURL);
+            const content = editorRef.current.editor.getContents();
+            editorRef.current?.editor?.updateContents(content, 'api');
+            socketRef.current.emit(ACTIONS.TEXT_CHANGE, {
+              roomId: pageId,
+              content,
+              client: userWs.name,
+            });
+            resolve(imageURL);
+          });
+        }
+      };
+    });
+  }, [editorRef]);
+
+  // useEffect(() => {
+  //   if (editorRef.current) {
+  //     const toolbar = editorRef.current?.editor?.getModule('toolbar');
+  //     if (toolbar) {
+  //       toolbar.addHandler('image', uploadHandler);
+  //     } else {
+  //       console.log('nop nop');
+  //     }
+  //   }
+  // }, []);
+
   useEffect(() => {
     /** init currentUser cursor */
     cursorRef.current = editorRef.current?.editor?.getModule('cursors');
     if (userWs && cursorRef.current && currentUser) {
-      console.log(userWs);
       cursorRef.current?.createCursor(userWs.socketId, userWs.name, '#0000');
     }
   }, [cursorRef, userWs]);
 
   /** init clients cursors */
   useEffect(() => {
-    console.log(group);
     group.forEach(({ socketId, name, color }) => {
       cursorRef.current.createCursor(socketId, name, color);
     });
@@ -147,13 +203,18 @@ const Editor = ({ pageId }) => {
 
   /** OnTextChange */
   const textChangeHandler = (content, delta, source) => {
-    console.log(content, delta, source);
+    // console.log(content, delta, source);
     if (!socketRef) {
       console.log('none socket');
       return;
     }
     if (source === 'user') {
-      socketRef && socketRef.current.emit(ACTIONS.TEXT_CHANGE, { roomId: pageId, content: delta, client: currentUser.username });
+      socketRef &&
+        socketRef.current.emit(ACTIONS.TEXT_CHANGE, {
+          roomId: pageId,
+          content: delta,
+          client: currentUser.username,
+        });
     }
   };
   /** OnSelectionChange */
@@ -168,7 +229,11 @@ const Editor = ({ pageId }) => {
        * @param socketId
        * @param selection
        * */
-      socketRef.current.emit(ACTIONS.CURSOR_CHANGE, { roomId: pageId, socketId: userWs.socketId, selection });
+      socketRef.current.emit(ACTIONS.CURSOR_CHANGE, {
+        roomId: pageId,
+        socketId: userWs.socketId,
+        selection,
+      });
     }
   };
 
@@ -213,7 +278,11 @@ const Editor = ({ pageId }) => {
                   .filter((x) => x.userId !== currentUser.userId)
                   .map((i) => (
                     <Fragment key={i.socketId}>
-                      <Tooltip target={`#avatar_${i.socketId}`} content={i.name} position="top"></Tooltip>
+                      <Tooltip
+                        target={`#avatar_${i.socketId}`}
+                        content={i.name}
+                        position="top"
+                      ></Tooltip>
                       <Avatar
                         id={`avatar_${i.socketId}`}
                         label={i.name.charAt(0)}
@@ -253,7 +322,13 @@ const Editor = ({ pageId }) => {
                   onClick={searchHandler}
                   className="p-2.5 ml-2 text-sm font-medium text-white bg-black rounded-lg border border-black focus:outline-none "
                 >
-                  <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                  <svg
+                    className="w-4 h-4"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 20 20"
+                  >
                     <path
                       stroke="currentColor"
                       strokeLinecap="round"
@@ -267,7 +342,12 @@ const Editor = ({ pageId }) => {
               </form>
             </div>
             {userSearched ? (
-              <UserCard setValue={setUserSearched} pageId={pageId} userId={userSearched.userId} username={userSearched.username} />
+              <UserCard
+                setValue={setUserSearched}
+                pageId={pageId}
+                userId={userSearched.userId}
+                username={userSearched.username}
+              />
             ) : (
               <></>
             )}
@@ -278,7 +358,7 @@ const Editor = ({ pageId }) => {
       <ReactQuill
         theme="snow"
         ref={editorRef}
-        modules={module}
+        modules={basedModule}
         formats={formats}
         // value={data.content}
         onChange={textChangeHandler}
