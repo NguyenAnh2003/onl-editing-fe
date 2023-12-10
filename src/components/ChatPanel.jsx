@@ -58,7 +58,7 @@ const ChatPanel = ({ open, handleClose }) => {
       const messageSending = {
         content: message.current.value,
         role: 'user',
-        sessionId: socket.current.id
+        sessionId: socket.current.id,
       };
       setListMess((prev) => [...prev, messageSending]);
       /** socket emit */
@@ -98,7 +98,11 @@ const ChatPanel = ({ open, handleClose }) => {
               <div>
                 {listMess.map((i, index) => (
                   <p key={index}>
-                    {i?.role}: {i?.content}
+                    {i.role === 'user' ? (
+                      <span>FROM USER: {i.content}</span>
+                    ) : (
+                      <span>FROM AI: {i.content}</span>
+                    )}
                   </p>
                 ))}
               </div>
