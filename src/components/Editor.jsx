@@ -74,7 +74,7 @@ const Editor = ({ pageId }) => {
 
       /** Joined pageId res */
       socketRef.current.on(ACTIONS.JOINED, ({ clients, userJoined }) => {
-        setUserWs({ socketId: userJoined.socketId, name: userJoined.name, color: userJoined.color, userId: userJoined.usreId }); //
+        setUserWs({ socketId: userJoined.socketId, name: userJoined.name, color: userJoined.color, userId: userJoined.userId }); //
         setGroup(clients);
         // setData({ name: data.name, content: data.content });
       });

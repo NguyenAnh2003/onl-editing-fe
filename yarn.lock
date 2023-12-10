@@ -2653,11 +2653,6 @@ quill-to-pdf@^1.0.7:
   dependencies:
     quilljs-parser "^1.0.11"
 
-quill-upload@^0.0.9:
-  version "0.0.9"
-  resolved "https://registry.yarnpkg.com/quill-upload/-/quill-upload-0.0.9.tgz#7d52789d30d887e6afd0b4473e7885e655db9d7e"
-  integrity sha512-p+8cS0chbK5NZw4yZ9VtFmEmjsR8Zc4ub03Y+Xf8v5T8ALsOZroo0gdUQcNw4/Poi34PTlnDC4CgIikt6u4T4A==
-
 quill@^1.3.7:
   version "1.3.7"
   resolved "https://registry.npmjs.org/quill/-/quill-1.3.7.tgz"
