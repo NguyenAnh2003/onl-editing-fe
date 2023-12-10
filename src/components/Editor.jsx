@@ -126,7 +126,7 @@ const Editor = ({ pageId }) => {
       searchUserRef.current.value = '';
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageId, socketRef]);
+  }, [pageId]);
 
   useEffect(() => {
     /** init currentUser cursor */

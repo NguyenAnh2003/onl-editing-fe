@@ -4,6 +4,7 @@ import { initSocket } from '../socket';
 import ACTIONS from '../actions';
 import { Toaster } from 'react-hot-toast';
 import { toast } from 'react-hot-toast';
+import Message from './Message';
 const style = {
   position: 'absolute',
   top: '40%',
@@ -15,6 +16,7 @@ const style = {
   border: '2px solid #000',
   boxShadow: 24,
   p: 4,
+  overflow: 'hidden',
 };
 
 const ChatPanel = ({ open, handleClose }) => {
@@ -31,7 +33,6 @@ const ChatPanel = ({ open, handleClose }) => {
       console.log('help', socket.current);
 
       /** disconnect */
-      // socket.current.on(ACTIONS.DISCONNECTED, { socketId: socket.current.id });
 
       /** ai response */
       socket.current.on(ACTIONS.AI_RESPONSE, async ({ response, sessionId }) => {
@@ -95,15 +96,11 @@ const ChatPanel = ({ open, handleClose }) => {
             </Typography>
             <div>
               {/** message */}
-              <div>
+              <div className="flex flex-col gap-4 ">
                 {listMess.map((i, index) => (
-                  <p key={index}>
-                    {i.role === 'user' ? (
-                      <span>FROM USER: {i.content}</span>
-                    ) : (
-                      <span>FROM AI: {i.content}</span>
-                    )}
-                  </p>
+                  <Message key={index} variant={i.role}>
+                    {i.content}
+                  </Message>
                 ))}
               </div>
               {/** input */}
