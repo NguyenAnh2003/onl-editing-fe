@@ -46,3 +46,13 @@ https://www.youtube.com/watch?v=tR9a9rwfruM
 
 ### MUI
 popup: https://mui.com/material-ui/react-popper/#material-ui-popup-state
+
+<!-- component variants -->
+### component variants
+forwardRef: https://legacy.reactjs.org/docs/forwarding-refs.html
+https://akhilaariyachandra.com/snippets/using-clsx-or-classnames-with-tailwind-merge
+https://github.com/michellejt/button-component-variants/blob/main/src/components/Button.js
+
+<!-- image sharing socketio -->
+https://www.cometchat.com/tutorials/react-chat-image-sharing
+https://morioh.com/a/b551f429ca28/implement-file-uploads-and-likes-in-a-react-chatroom

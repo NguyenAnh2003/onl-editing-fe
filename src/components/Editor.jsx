@@ -17,7 +17,7 @@ import ACTIONS from '../actions';
 import { UserContext } from '../store/UserProvider';
 /** ReactQuill config */
 import ReactQuill, { Quill } from 'react-quill';
-import { formats, module as basedModule, module } from '../config/quill.config';
+import { formats, module as basedModule } from '../config/quill.config';
 import 'react-quill/dist/quill.snow.css';
 /** Pdf export */
 import { pdfExporter } from 'quill-to-pdf';
@@ -29,14 +29,12 @@ import { AvatarGroup } from 'primereact/avatargroup';
 import { Tooltip } from 'primereact/tooltip';
 import { Avatar } from 'primereact/avatar';
 import UserCard from './UserCard';
-import { ImageHandler } from 'quill-upload';
 /** Toaster */
 import { Toaster } from 'react-hot-toast';
 import { toast } from 'react-hot-toast';
 import { exportPDF } from '../libs/file.api';
 /** Register cursor */
 Quill.register('modules/cursors', QuillCursors);
-// Quill.register('modules/imageHandler', ImageHandler);
 
 /**
  * init socket
@@ -88,7 +86,7 @@ const Editor = ({ pageId }) => {
           socketId: userJoined.socketId,
           name: userJoined.name,
           color: userJoined.color,
-          userId: userJoined.usreId,
+          userId: userJoined.userId,
         }); //
         setGroup(clients);
         // setData({ name: data.name, content: data.content });
@@ -110,6 +108,13 @@ const Editor = ({ pageId }) => {
           editorRef.current?.editor?.updateContents(content, 'api');
           console.log('not equal');
         }
+      });
+
+      /** imageURL quill */
+      socketRef.current.on('upload', ({ imageURL }) => {
+        console.log(imageURL);
+        const range = editorRef.current?.editor.getSelection();
+        range && editorRef.current?.editor?.insertEmbed(range.index, 'image', imageURL);
       });
 
       /** cursor change */
@@ -141,50 +146,34 @@ const Editor = ({ pageId }) => {
       searchUserRef.current.value = '';
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pageId, socketRef]);
+  }, [pageId]);
 
   const uploadHandler = useCallback(() => {
-    return new Promise((resolve, reject) => {
-      const input = document.createElement('input');
-      input.setAttribute('type', 'file');
-      input.setAttribute('accept', 'image/*');
-      input.click();
+    const input = document.createElement('input');
+    input.setAttribute('type', 'file');
+    input.setAttribute('accept', 'image/*');
+    input.click();
 
-      input.onchange = () => {
-        if (input.files[0]) {
-          const file = input.files[0];
-          console.log(file);
-          /** socket emit */
-          socketRef.current.emit('upload', { file, filename: file.name, pageId });
-
-          socketRef.current.on('upload', ({ imageURL }) => {
-            console.log(imageURL);
-            const range = editorRef.current?.editor.getSelection();
-            range && editorRef.current?.editor?.insertEmbed(range.index, 'image', imageURL);
-            const content = editorRef.current.editor.getContents();
-            editorRef.current?.editor?.updateContents(content, 'api');
-            socketRef.current.emit(ACTIONS.TEXT_CHANGE, {
-              roomId: pageId,
-              content,
-              client: userWs.name,
-            });
-            resolve(imageURL);
-          });
-        }
-      };
-    });
+    input.onchange = () => {
+      if (input.files[0]) {
+        const file = input.files[0];
+        console.log(file);
+        /** socket emit */
+        socketRef.current.emit('upload', { file, filename: file.name, pageId });
+      }
+    };
   }, [editorRef]);
 
-  // useEffect(() => {
-  //   if (editorRef.current) {
-  //     const toolbar = editorRef.current?.editor?.getModule('toolbar');
-  //     if (toolbar) {
-  //       toolbar.addHandler('image', uploadHandler);
-  //     } else {
-  //       console.log('nop nop');
-  //     }
-  //   }
-  // }, []);
+  useEffect(() => {
+    if (editorRef.current) {
+      const toolbar = editorRef.current?.editor?.getModule('toolbar');
+      if (toolbar) {
+        toolbar.addHandler('image', uploadHandler);
+      } else {
+        console.log('nop nop');
+      }
+    }
+  }, []);
 
   useEffect(() => {
     /** init currentUser cursor */

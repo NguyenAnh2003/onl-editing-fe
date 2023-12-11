@@ -4,6 +4,7 @@ import { initSocket } from '../socket';
 import ACTIONS from '../actions';
 import { Toaster } from 'react-hot-toast';
 import { toast } from 'react-hot-toast';
+import Message from './Message';
 const style = {
   position: 'absolute',
   top: '40%',
@@ -15,6 +16,7 @@ const style = {
   border: '2px solid #000',
   boxShadow: 24,
   p: 4,
+  overflow: 'hidden',
 };
 
 const ChatPanel = ({ open, handleClose }) => {
@@ -31,16 +33,14 @@ const ChatPanel = ({ open, handleClose }) => {
       console.log('help', socket.current);
 
       /** disconnect */
-      // socket.current.on(ACTIONS.DISCONNECTED, { socketId: socket.current.id });
 
       /** ai response */
-      socket.current.on(ACTIONS.AI_RESPONSE, async ({ responseData }) => {
-        const { response, sessionId } = responseData;
+      socket.current.on(ACTIONS.AI_RESPONSE, async ({ response, sessionId }) => {
         if (response && sessionId) {
           console.log('from ai', response, 'session id', sessionId);
           setListMess((prev) => [...prev, response]);
         } else {
-          toast.error('Cannot get response')
+          toast.error('Cannot get response');
         }
       });
     };
@@ -56,24 +56,25 @@ const ChatPanel = ({ open, handleClose }) => {
   const keyPressHandler = (e) => {
     if (e.key === 'Enter') {
       /** set current message */
-      console.log(message.current.value);
       const messageSending = {
         content: message.current.value,
         role: 'user',
+        sessionId: socket.current.id,
       };
-      console.log(messageSending);
       setListMess((prev) => [...prev, messageSending]);
       /** socket emit */
       socket.current.emit(ACTIONS.SEND_MESSAGE, {
         messageSending,
         sessionId: socket.current.id,
       });
+      /** remove */
+      message.current.value = '';
     }
   };
 
   return (
     <div>
-      <Toaster reverseOrder={false} position='top-right'/>
+      <Toaster reverseOrder={false} position="top-right" />
       {/** socket init */}
       <Modal
         aria-labelledby="transition-modal-title"
@@ -95,11 +96,11 @@ const ChatPanel = ({ open, handleClose }) => {
             </Typography>
             <div>
               {/** message */}
-              <div>
+              <div className="flex flex-col gap-4 ">
                 {listMess.map((i, index) => (
-                  <p key={index}>
-                    {i?.role}: {i?.content}
-                  </p>
+                  <Message key={index} variant={i.role}>
+                    {i.content}
+                  </Message>
                 ))}
               </div>
               {/** input */}
