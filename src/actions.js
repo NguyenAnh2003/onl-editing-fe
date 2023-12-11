@@ -7,7 +7,8 @@ const ACTIONS = {
   SAVE_TEXT: 'save-doc',
   LOAD_DOC: 'load-doc',
   CURSOR_CHANGE: 'cursor-change',
-  LEAVE: 'leave',
+  LEAVE_ROOM: 'leave-room',
+  LEAVE_CHAT: 'leave-chat',
   /** messaging */
   SEND_MESSAGE: 'send-message',
   AI_RESPONSE: 'ai-response',
