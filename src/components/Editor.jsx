@@ -110,11 +110,15 @@ const Editor = ({ pageId }) => {
         }
       });
 
-      /** imageURL quill */
-      socketRef.current.on('upload', ({ imageURL }) => {
-        console.log(imageURL);
-        const range = editorRef.current?.editor.getSelection();
-        range && editorRef.current?.editor?.insertEmbed(range.index, 'image', imageURL);
+      socketRef.current.on('send-image', ({ imageURL, userId: sender, sessionId }) => {
+        if (sender !== currentUser.userId) {
+          console.log(imageURL);
+          const cr = cursorRef.current.getCursor(sessionId);
+          console.log(`${sessionId}`, cr);
+          /** cursor based on socketId */
+          // const range = editorRef.current?.editor.getSelection();
+          // range && editorRef.current?.editor?.insertEmbed(range.index, 'image', imageURL);
+        }
       });
 
       /** cursor change */
@@ -160,6 +164,19 @@ const Editor = ({ pageId }) => {
         console.log(file);
         /** socket emit */
         socketRef.current.emit('upload', { file, filename: file.name, pageId });
+        /** imageURL quill */
+        socketRef.current.on('upload', ({ imageURL }) => {
+          console.log(imageURL);
+          const range = editorRef.current?.editor.getSelection();
+          range && editorRef.current?.editor?.insertEmbed(range.index, 'image', imageURL);
+          /** send file */
+          socketRef.current.emit('send-image', {
+            imageURL,
+            userId: currentUser.userId,
+            pageId,
+            sessionId: userWs.socketId,
+          });
+        });
       }
     };
   }, [editorRef]);
