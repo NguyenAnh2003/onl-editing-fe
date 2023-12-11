@@ -88,6 +88,7 @@ const Editor = ({ pageId }) => {
           color: userJoined.color,
           userId: userJoined.userId,
         }); //
+        console.log(userWs);
         setGroup(clients);
         // setData({ name: data.name, content: data.content });
       });
@@ -110,21 +111,22 @@ const Editor = ({ pageId }) => {
         }
       });
 
-      socketRef.current.on('send-image', ({ imageURL, userId: sender, sessionId }) => {
-        if (sender !== currentUser.userId) {
+      socketRef.current.on('send-image', ({ imageURL, userId: senderId, sessionId }) => {
+        if (senderId !== currentUser.userId) {
           console.log(imageURL);
-          const cr = cursorRef.current.getCursor(sessionId);
-          console.log(`${sessionId}`, cr);
+          const listCursors = cursorRef && cursorRef.current.cursors();
+          console.log('cursors', listCursors);
+          const otherCursor = listCursors.filter((x) => x.id === sessionId);
+          console.log(`${sessionId}`, otherCursor);
+
           /** cursor based on socketId */
-          // const range = editorRef.current?.editor.getSelection();
-          // range && editorRef.current?.editor?.insertEmbed(range.index, 'image', imageURL);
         }
       });
 
       /** cursor change */
       socketRef.current.on(ACTIONS.CURSOR_CHANGE, ({ socketId, selection }) => {
         if (selection) {
-          cursorRef.current.moveCursor(socketId, selection);
+          cursorRef && cursorRef.current.moveCursor(socketId, selection);
         }
       });
 
@@ -134,12 +136,12 @@ const Editor = ({ pageId }) => {
           return prev.filter((client) => client.socketId !== socketId);
         });
         /** remove cursor */
-        cursorRef.current.removeCursor(socketId);
+        cursorRef && cursorRef.current.removeCursor(socketId);
       });
     };
     /** function call init */
     onConnection();
-    console.log('init connection', pageData && pageData.content);
+    // console.log('init connection', pageData && pageData.content);
 
     /** remove state */
     return () => {
@@ -168,34 +170,39 @@ const Editor = ({ pageId }) => {
         socketRef.current.on('upload', ({ imageURL }) => {
           console.log(imageURL);
           const range = editorRef.current?.editor.getSelection();
+          console.log(range);
           range && editorRef.current?.editor?.insertEmbed(range.index, 'image', imageURL);
           /** send file */
-          socketRef.current.emit('send-image', {
-            imageURL,
-            userId: currentUser.userId,
-            pageId,
-            sessionId: userWs.socketId,
-          });
+          if (userWs) {
+            console.log(userWs.socketId);
+            socketRef.current.emit('send-image', {
+              imageURL,
+              userId: currentUser.userId,
+              pageId,
+              sessionId: userWs.socketId,
+            });
+          }
         });
       }
     };
-  }, [editorRef]);
+  }, [editorRef, userWs]);
 
   useEffect(() => {
     if (editorRef.current) {
       const toolbar = editorRef.current?.editor?.getModule('toolbar');
-      if (toolbar) {
+      if (toolbar && userWs) {
         toolbar.addHandler('image', uploadHandler);
       } else {
         console.log('nop nop');
       }
     }
-  }, []);
+  }, [userWs]);
 
   useEffect(() => {
     /** init currentUser cursor */
     cursorRef.current = editorRef.current?.editor?.getModule('cursors');
     if (userWs && cursorRef.current && currentUser) {
+      console.log('userWs', userWs);
       cursorRef.current?.createCursor(userWs.socketId, userWs.name, '#0000');
     }
   }, [cursorRef, userWs]);
@@ -228,7 +235,7 @@ const Editor = ({ pageId }) => {
     console.log(selection, source);
     if (selection) {
       /** Move cursor code */
-      cursorRef.current.moveCursor(userWs.socketId, selection);
+      cursorRef && cursorRef.current.moveCursor(userWs.socketId, selection);
       /**
        *  socket Emit data
        * @param pageId
