@@ -117,8 +117,10 @@ const Editor = ({ pageId }) => {
           const listCursors = cursorRef && cursorRef.current.cursors();
           console.log('cursors', listCursors);
           const otherCursor = listCursors.filter((x) => x.id === sessionId);
-          console.log(`${sessionId}`, otherCursor);
-
+          otherCursor.forEach(({ id, range }) => {
+            console.log('get other cursor info', id, range);
+            range && editorRef.current?.editor?.insertEmbed(range.index, 'image', imageURL);
+          });
           /** cursor based on socketId */
         }
       });
