@@ -1,7 +1,7 @@
 import { getHTTP, postHTTP } from '../config/api.config';
 
 export const userLogin = async (name, password) => {
-  const res = postHTTP('login', {
+  const res = postHTTP('/login', {
     name,
     password,
   });
@@ -9,7 +9,7 @@ export const userLogin = async (name, password) => {
 };
 
 export const userRegister = async (name, password) => {
-  const res = postHTTP('register', {
+  const res = postHTTP('/register', {
     name,
     password,
   });
@@ -17,6 +17,6 @@ export const userRegister = async (name, password) => {
 };
 
 export const searchUser = async (name) => {
-  const res = getHTTP(`search-user/${name}`,);
+  const res = getHTTP(`search-user/${name}`);
   return res;
 };

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getToken } from '../libs/token';
 
 const axiosConfig = axios.create({
   baseURL: 'http://localhost:5000/api/',
@@ -12,6 +13,12 @@ axiosConfig.interceptors.request.use(
   (config) => {
     if (config.url.includes('/upload')) {
       config.headers['Content-Type'] = 'multipart/form-data';
+    }
+    if (!config.url.includes('/login') && !config.url.includes('/register')) {
+      const token = getToken();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
     }
     return config;
   },
