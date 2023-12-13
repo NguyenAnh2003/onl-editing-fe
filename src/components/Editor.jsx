@@ -25,6 +25,7 @@ import UserCard from './UserCard';
 import { Toaster } from 'react-hot-toast';
 import { toast } from 'react-hot-toast';
 import { exportPDF } from '../libs/file.api';
+import { decryptHelper, encryptHelper } from '../libs/utils';
 /** Register cursor */
 Quill.register('modules/cursors', QuillCursors);
 
@@ -74,7 +75,12 @@ const Editor = ({ pageId }) => {
 
       /** Joined pageId res */
       socketRef.current.on(ACTIONS.JOINED, ({ clients, userJoined }) => {
-        setUserWs({ socketId: userJoined.socketId, name: userJoined.name, color: userJoined.color, userId: userJoined.userId }); //
+        setUserWs({
+          socketId: userJoined.socketId,
+          name: userJoined.name,
+          color: userJoined.color,
+          userId: userJoined.userId,
+        }); //
         setGroup(clients);
         // setData({ name: data.name, content: data.content });
       });
@@ -90,7 +96,9 @@ const Editor = ({ pageId }) => {
       });
 
       /** onTextChange */
-      socketRef.current.on(ACTIONS.TEXT_CHANGE, ({ content, client: senderClient }) => {
+      socketRef.current.on(ACTIONS.TEXT_CHANGE, ({ responseData }) => {
+        const { content, client: senderClient } = decryptHelper(responseData);
+        console.log(responseData);
         if (currentUser.username !== senderClient) {
           editorRef.current?.editor?.updateContents(content, 'api');
           console.log('not equal');
@@ -153,7 +161,16 @@ const Editor = ({ pageId }) => {
       return;
     }
     if (source === 'user') {
-      socketRef && socketRef.current.emit(ACTIONS.TEXT_CHANGE, { roomId: pageId, content: delta, client: currentUser.username });
+      const requestData = encryptHelper({
+        roomId: pageId,
+        content: delta,
+        client: currentUser.username,
+      });
+      console.log(requestData);
+      socketRef &&
+        socketRef.current.emit(ACTIONS.TEXT_CHANGE, {
+          requestData,
+        });
     }
   };
   /** OnSelectionChange */
@@ -168,7 +185,11 @@ const Editor = ({ pageId }) => {
        * @param socketId
        * @param selection
        * */
-      socketRef.current.emit(ACTIONS.CURSOR_CHANGE, { roomId: pageId, socketId: userWs.socketId, selection });
+      socketRef.current.emit(ACTIONS.CURSOR_CHANGE, {
+        roomId: pageId,
+        socketId: userWs.socketId,
+        selection,
+      });
     }
   };
 
@@ -213,7 +234,11 @@ const Editor = ({ pageId }) => {
                   .filter((x) => x.userId !== currentUser.userId)
                   .map((i) => (
                     <Fragment key={i.socketId}>
-                      <Tooltip target={`#avatar_${i.socketId}`} content={i.name} position="top"></Tooltip>
+                      <Tooltip
+                        target={`#avatar_${i.socketId}`}
+                        content={i.name}
+                        position="top"
+                      ></Tooltip>
                       <Avatar
                         id={`avatar_${i.socketId}`}
                         label={i.name.charAt(0)}
@@ -253,7 +278,13 @@ const Editor = ({ pageId }) => {
                   onClick={searchHandler}
                   className="p-2.5 ml-2 text-sm font-medium text-white bg-black rounded-lg border border-black focus:outline-none "
                 >
-                  <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                  <svg
+                    className="w-4 h-4"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 20 20"
+                  >
                     <path
                       stroke="currentColor"
                       strokeLinecap="round"
@@ -267,7 +298,12 @@ const Editor = ({ pageId }) => {
               </form>
             </div>
             {userSearched ? (
-              <UserCard setValue={setUserSearched} pageId={pageId} userId={userSearched.userId} username={userSearched.username} />
+              <UserCard
+                setValue={setUserSearched}
+                pageId={pageId}
+                userId={userSearched.userId}
+                username={userSearched.username}
+              />
             ) : (
               <></>
             )}
