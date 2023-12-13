@@ -2,7 +2,6 @@
 /* eslint-disable react/prop-types */
 import { createContext, useCallback, useEffect, useMemo, useState } from 'react';
 import Cookies from 'js-cookie';
-import { setToken } from '../libs/token';
 
 const UserContext = createContext();
 
@@ -20,9 +19,8 @@ const UserProvider = ({ children }) => {
   const login = useCallback((response) => {
     setCurrentUser(response);
     /** setCookie currentUser */
-    const { token, userId, username } = response;
+    const { userId, username } = response;
     Cookies.set('currentUser', JSON.stringify({ userId, username }), { expires: 24 });
-    setToken(token);
   }, []);
 
   // useEffect(() => {
