@@ -119,7 +119,7 @@ const Editor = ({ pageId }) => {
           const otherCursor = listCursors.filter((x) => x.id === sessionId);
           otherCursor.forEach(({ id, range }) => {
             console.log('get other cursor info', id, range);
-            range && editorRef.current?.editor?.insertEmbed(range.index, 'image', imageURL);
+            editorRef.current?.editor?.insertEmbed(range.index, 'image', imageURL);
           });
           /** cursor based on socketId */
         }
