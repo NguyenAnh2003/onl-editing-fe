@@ -4,6 +4,7 @@ import React, { useContext, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { userLogin } from '../libs/user.api';
 import { UserContext } from '../store/UserProvider';
+import { decryptHelper } from '../libs/utils';
 
 const SignInPage = () => {
   const nameRef = useRef(null);
@@ -17,15 +18,13 @@ const SignInPage = () => {
    */
   const submitHandler = async () => {
     try {
-      const res = await userLogin(nameRef.current.value, passwordRef.current.value);
-      console.log(res);
-      /** 
-       * login - useContext 
-       * save currentUser in cookie
-       * */
-      login(res.data);
+      const { data, status } = await userLogin(nameRef.current.value, passwordRef.current.value);
+      /** encrypted data */
+      console.log(data);
+      const { userId, username } = decryptHelper(data);
+      login({ userId, username });
       /** Navigate to home */
-      if (res.status === 200) navigation('/');
+      if (status === 200) navigation('/');
     } catch (error) {
       console.error(error);
     }
@@ -63,7 +62,11 @@ const SignInPage = () => {
 
           <div className="text-grey-dark mt-6">
             Create Account
-            <Link to={'/signup'} className="no-underline border-b border-blue text-blue" href="../login/">
+            <Link
+              to={'/signup'}
+              className="no-underline border-b border-blue text-blue"
+              href="../login/"
+            >
               {' '}
               Register
             </Link>

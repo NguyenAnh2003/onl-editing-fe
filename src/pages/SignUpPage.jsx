@@ -8,14 +8,16 @@ const SignUpPage = () => {
   const nameRef = useRef(null);
   const passwordRef = useRef(null);
   const navigate = useNavigate();
-  
+
   const submitHandler = async () => {
     try {
       console.log(nameRef.current.value, passwordRef.current.value);
-      const res = await userRegister(nameRef.current?.value, passwordRef.current?.value);
-      console.log(res);
-      /** if res navigate to sign in page (save info on browser manager) */
-      if (res.status === 200) navigate('/signin');
+      const { data, status } = await userRegister(
+        nameRef.current?.value,
+        passwordRef.current?.value
+      );
+      /** if data navigate to sign in page (save info on browser manager) */
+      if (status === 200 && data) navigate('/signin');
     } catch (error) {
       console.log(error);
     }
@@ -61,7 +63,11 @@ const SignUpPage = () => {
 
           <div className="text-grey-dark mt-6">
             Already have an account?
-            <Link to={'/signin'} className="no-underline border-b border-blue text-blue" href="../login/">
+            <Link
+              to={'/signin'}
+              className="no-underline border-b border-blue text-blue"
+              href="../login/"
+            >
               {' '}
               Log in
             </Link>

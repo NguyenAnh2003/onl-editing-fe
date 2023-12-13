@@ -5,6 +5,7 @@ import ACTIONS from '../actions';
 import { Toaster } from 'react-hot-toast';
 import { toast } from 'react-hot-toast';
 import Message from './Message';
+import { decryptHelper, encryptHelper } from '../libs/utils';
 const style = {
   position: 'absolute',
   top: '40%',
@@ -35,7 +36,8 @@ const ChatPanel = ({ open, handleClose }) => {
       /** disconnect */
 
       /** ai response */
-      socket.current.on(ACTIONS.AI_RESPONSE, async ({ response, sessionId }) => {
+      socket.current.on(ACTIONS.AI_RESPONSE, async ({ responseData }) => {
+        const { response, sessionId } = decryptHelper(responseData);
         if (response && sessionId) {
           console.log('from ai', response, 'session id', sessionId);
           setListMess((prev) => [...prev, response]);
@@ -61,11 +63,12 @@ const ChatPanel = ({ open, handleClose }) => {
         role: 'user',
         sessionId: socket.current.id,
       };
+      const requestData = encryptHelper(messageSending);
+
       setListMess((prev) => [...prev, messageSending]);
       /** socket emit */
       socket.current.emit(ACTIONS.SEND_MESSAGE, {
-        messageSending,
-        sessionId: socket.current.id,
+        requestData,
       });
       /** remove */
       message.current.value = '';
