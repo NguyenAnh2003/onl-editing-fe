@@ -67,14 +67,18 @@ const Editor = ({ pageId }) => {
 
       console.log('from editor', socketRef.current.id);
       /** Join pageId request */
-      socketRef.current.emit(ACTIONS.JOIN, {
+      const requestData = encryptHelper({
         roomId: pageId,
         name: currentUser.username,
         userId: currentUser.userId,
       });
+      socketRef.current.emit(ACTIONS.JOIN, {
+        requestData,
+      });
 
       /** Joined pageId res */
-      socketRef.current.on(ACTIONS.JOINED, ({ clients, userJoined }) => {
+      socketRef.current.on(ACTIONS.JOINED, ({ responseData }) => {
+        const { clients, userJoined } = decryptHelper(responseData);
         setUserWs({
           socketId: userJoined.socketId,
           name: userJoined.name,
@@ -86,9 +90,9 @@ const Editor = ({ pageId }) => {
       });
 
       /** load page */
-      socketRef.current.on(ACTIONS.LOAD_DOC, ({ data }) => {
-        console.log(data);
-        setPageData({ name: data.name, content: data.content });
+      socketRef.current.on(ACTIONS.LOAD_DOC, ({ responseData }) => {
+        const { name, content } = decryptHelper(responseData);
+        setPageData({ name, content });
 
         if (data.content) {
           editorRef.current?.editor.setContents(data.content);
@@ -106,14 +110,16 @@ const Editor = ({ pageId }) => {
       });
 
       /** cursor change */
-      socketRef.current.on(ACTIONS.CURSOR_CHANGE, ({ socketId, selection }) => {
+      socketRef.current.on(ACTIONS.CURSOR_CHANGE, ({ responseData }) => {
+        const { socketId, selection } = decryptHelper(responseData);
         if (selection) {
           cursorRef.current.moveCursor(socketId, selection);
         }
       });
 
       /** disconnect pageId */
-      socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, name }) => {
+      socketRef.current.on(ACTIONS.DISCONNECTED, ({ responseData }) => {
+        const { socketId, name } = decryptHelper(responseData);
         setGroup((prev) => {
           return prev.filter((client) => client.socketId !== socketId);
         });
@@ -185,10 +191,9 @@ const Editor = ({ pageId }) => {
        * @param socketId
        * @param selection
        * */
+      const requestData = encryptHelper({ roomId: pageId, socketId: userWs.socketId, selection });
       socketRef.current.emit(ACTIONS.CURSOR_CHANGE, {
-        roomId: pageId,
-        socketId: userWs.socketId,
-        selection,
+        requestData,
       });
     }
   };
