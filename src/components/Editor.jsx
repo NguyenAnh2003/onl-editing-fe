@@ -94,8 +94,8 @@ const Editor = ({ pageId }) => {
         const { name, content } = decryptHelper(responseData);
         setPageData({ name, content });
 
-        if (data.content) {
-          editorRef.current?.editor.setContents(data.content);
+        if (content) {
+          editorRef.current?.editor.setContents(content);
         }
       });
 
