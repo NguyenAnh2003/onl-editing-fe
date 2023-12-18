@@ -93,10 +93,7 @@ const Editor = ({ pageId }) => {
       socketRef.current.on(ACTIONS.LOAD_DOC, ({ responseData }) => {
         const { name, content } = decryptHelper(responseData);
         setPageData({ name, content });
-
-        if (content) {
-          editorRef.current?.editor.setContents(content);
-        }
+        content && editorRef.current?.editor.setContents(content);
       });
 
       /** onTextChange */
