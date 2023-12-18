@@ -4,9 +4,11 @@
  */
 
 import { postHTTP } from '../config/api.config';
+import { encryptHelper } from './utils';
 
 /** upload file including spaceId */
 export const exportPDF = (delta, filename) => {
-  const res = postHTTP('/pdf-export', { delta, filename });
+  const encryptedRequest = encryptHelper({ delta, filename });
+  const res = postHTTP('/pdf-export', { encryptedRequest });
   return res;
 };

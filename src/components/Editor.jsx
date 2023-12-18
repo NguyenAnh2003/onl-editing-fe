@@ -212,10 +212,11 @@ const Editor = ({ pageId }) => {
     /** send delta to server */
     const delta = editorRef.current.editor.getContents();
     const { data, status } = await exportPDF(delta, pageData.name);
+    const dencryptedResponse = decryptHelper(data);
     console.log(status);
     console.log(data);
     if (status === 200) {
-      saveAs(data, `${pageData.name}.pdf`);
+      saveAs(dencryptedResponse, `${pageData.name}.pdf`);
     }
   };
 
