@@ -142,7 +142,6 @@ const Home = () => {
                 <div key={index}>
                   {' '}
                   <Page
-                    key={index}
                     setPageId={setPageId}
                     name={i.name}
                     pId={i._id}
@@ -163,7 +162,6 @@ const Home = () => {
                 <div key={index}>
                   {' '}
                   <Page
-                    key={index}
                     setPageId={setPageId}
                     name={i.name}
                     pId={i._id}

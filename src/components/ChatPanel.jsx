@@ -97,7 +97,7 @@ const ChatPanel = ({ open, handleClose }) => {
             <Typography id="transition-modal-title" variant="h6" component="h3">
               Ask AI
             </Typography>
-            <div>
+            <div className="h-[340px] overflow-y-scroll">
               {/** message */}
               <div className="flex flex-col gap-4 ">
                 {listMess.map((i, index) => (
@@ -106,14 +106,14 @@ const ChatPanel = ({ open, handleClose }) => {
                   </Message>
                 ))}
               </div>
-              {/** input */}
-              <input
-                ref={message}
-                onKeyDown={keyPressHandler}
-                className="absolute bottom-8 pt-2 pb-2 pl-1 w-[332px]"
-                placeholder="Enter message"
-              />
             </div>
+            {/** input */}
+            <input
+              ref={message}
+              onKeyDown={keyPressHandler}
+              className="absolute bottom-8 pt-2 pb-2 pl-1 w-[332px]"
+              placeholder="Enter message"
+            />
           </Box>
         </Fade>
       </Modal>
