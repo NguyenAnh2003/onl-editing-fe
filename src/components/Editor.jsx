@@ -86,7 +86,6 @@ const Editor = ({ pageId }) => {
           userId: userJoined.userId,
         }); //
         setGroup(clients);
-        // setData({ name: data.name, content: data.content });
       });
 
       /** load page */
@@ -139,6 +138,7 @@ const Editor = ({ pageId }) => {
       searchUserRef.current.value = '';
       cursorRef.current.clearCursors();
       setPageData({ name: '', content: {} });
+      editorRef.current.editor.setContents({});
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageId]);

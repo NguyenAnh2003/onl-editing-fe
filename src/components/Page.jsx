@@ -9,9 +9,12 @@ import { ImCross } from 'react-icons/im';
 
 const Page = React.memo(({ setPageId, pId, name, removePage, isColab }) => {
   /** select with setPageId */
-  const selectHandler = () => {
+  const selectHandler = useCallback(() => {
     setPageId(pId);
-  };
+    return () => {
+      setPageId('');
+    };
+  }, [pId, name]);
 
   /** remove page */
   const removeHandler = async () => {

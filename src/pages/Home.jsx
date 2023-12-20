@@ -51,6 +51,10 @@ const Home = () => {
       }
     };
     fetchData();
+
+    return () => {
+      setListPage([]);
+    };
   }, []);
 
   /**
@@ -77,6 +81,10 @@ const Home = () => {
       }
     };
     fetchColab();
+
+    return () => {
+      setColabPages([])
+    }
   }, []);
 
   /** create page handler  */
