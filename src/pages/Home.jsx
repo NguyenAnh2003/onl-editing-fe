@@ -147,6 +147,7 @@ const Home = () => {
                     name={i.name}
                     pId={i._id}
                     removePage={setListPage}
+                    isColab={false}
                   />
                 </div>
               ))}
@@ -157,7 +158,7 @@ const Home = () => {
           {/* colab pages */}
           <p className="text-xl font-bold pt-3 pb-5">Your colab pages</p>
           {colabPage && colabPage ? (
-            <div className="w-full divide-y gap-4 flex flex-col">
+            <div className="w-full divide-y gap-1 flex flex-col">
               {colabPage.map((i, index) => (
                 <div key={index}>
                   {' '}
@@ -166,7 +167,7 @@ const Home = () => {
                     setPageId={setPageId}
                     name={i.name}
                     pId={i._id}
-                    removePage={setColabPages}
+                    isColab={true}
                   />
                 </div>
               ))}

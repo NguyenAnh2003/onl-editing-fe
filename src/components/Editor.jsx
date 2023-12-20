@@ -3,7 +3,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
 import { Menubar } from 'primereact/menubar';
-import React, { Fragment, useContext, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { initSocket } from '../socket';
 import ACTIONS from '../actions';
 import { UserContext } from '../store/UserProvider';
@@ -61,7 +61,7 @@ const Editor = ({ pageId }) => {
      * after that listening every event from client
      * including disconnect
      */
-    console.log('pageId', pageId);
+    if (!pageId) return;
     const onConnection = async () => {
       socketRef.current = await initSocket();
 
@@ -93,7 +93,8 @@ const Editor = ({ pageId }) => {
       socketRef.current.on(ACTIONS.LOAD_DOC, ({ responseData }) => {
         const { name, content } = decryptHelper(responseData);
         setPageData({ name, content });
-        content && editorRef.current?.editor.setContents(content);
+        console.log(decryptHelper(responseData));
+        content && updatePageContent(content);
       });
 
       /** onTextChange */
@@ -126,7 +127,6 @@ const Editor = ({ pageId }) => {
     };
     /** function call init */
     onConnection();
-    console.log('init connection', pageData && pageData.content);
 
     /** remove state */
     return () => {
@@ -156,9 +156,16 @@ const Editor = ({ pageId }) => {
     });
   }, [group]);
 
+  const updatePageContent = useCallback(
+    (content) => {
+      content && editorRef.current?.editor.setContents(content);
+    },
+    [pageId, pageData]
+  );
+
   /** OnTextChange */
   const textChangeHandler = (content, delta, source) => {
-    console.log(content, delta, source);
+    // console.log(content, delta, source);
     if (!socketRef) {
       console.log('none socket');
       return;

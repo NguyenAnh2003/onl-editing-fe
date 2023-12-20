@@ -7,7 +7,7 @@ import { deletePage } from '../libs/page.api';
 import { Toaster, toast } from 'react-hot-toast';
 import { ImCross } from 'react-icons/im';
 
-const Page = React.memo(({ setPageId, pId, name, removePage }) => {
+const Page = React.memo(({ setPageId, pId, name, removePage, isColab }) => {
   /** select with setPageId */
   const selectHandler = () => {
     setPageId(pId);
@@ -44,7 +44,7 @@ const Page = React.memo(({ setPageId, pId, name, removePage }) => {
             </div>
           </div>
           {/** Icon */}
-          <ImCross size={20} onClick={removeHandler} />
+          {isColab === false ? <ImCross size={15} onClick={removeHandler} /> : <></>}
         </div>
       </div>
     </div>
