@@ -137,7 +137,7 @@ const Editor = ({ pageId }) => {
       setUserSearched();
       searchUserRef.current.value = '';
       cursorRef.current.clearCursors();
-      setPageData({ name: '', content: {} });
+      setPageData({});
       editorRef.current.editor.setContents({});
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
