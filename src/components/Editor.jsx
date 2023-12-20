@@ -94,7 +94,9 @@ const Editor = ({ pageId }) => {
         const { name, content } = decryptHelper(responseData);
         setPageData({ name, content });
         console.log(decryptHelper(responseData));
-        content && updatePageContent(content);
+        if (content) {
+          setPageContent(content);
+        }
       });
 
       /** onTextChange */
@@ -135,11 +137,14 @@ const Editor = ({ pageId }) => {
       socketRef.current.off(ACTIONS.DISCONNECTED);
       setUserSearched();
       searchUserRef.current.value = '';
+      cursorRef.current.clearCursors();
+      setPageData({ name: '', content: {} });
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageId]);
 
   useEffect(() => {
+    if (!cursorRef) return;
     /** init currentUser cursor */
     cursorRef.current = editorRef.current?.editor?.getModule('cursors');
     if (userWs && cursorRef.current && currentUser) {
@@ -150,17 +155,18 @@ const Editor = ({ pageId }) => {
 
   /** init clients cursors */
   useEffect(() => {
+    if (!cursorRef) return;
     console.log(group);
     group.forEach(({ socketId, name, color }) => {
       cursorRef.current.createCursor(socketId, name, color);
     });
-  }, [group]);
+  }, [group, pageId]);
 
-  const updatePageContent = useCallback(
+  const setPageContent = useCallback(
     (content) => {
-      content && editorRef.current?.editor.setContents(content);
+      editorRef.current?.editor.setContents(content);
     },
-    [pageId, pageData]
+    [pageId, pageData, editorRef]
   );
 
   /** OnTextChange */

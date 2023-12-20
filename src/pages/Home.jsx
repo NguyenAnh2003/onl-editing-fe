@@ -168,6 +168,7 @@ const Home = () => {
                     name={i.name}
                     pId={i._id}
                     isColab={true}
+                    removePage={null}
                   />
                 </div>
               ))}
