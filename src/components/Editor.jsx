@@ -131,13 +131,21 @@ const Editor = ({ pageId }) => {
 
     /** remove state */
     return () => {
+      /** socket, events remove */
       socketRef.current.disconnect();
+      socketRef.current.off(ACTIONS.JOIN)
       socketRef.current.off(ACTIONS.JOINED);
+      socketRef.current.off(ACTIONS.TEXT_CHANGE)
+      socketRef.current.off(ACTIONS.CURSOR_CHANGE)
       socketRef.current.off(ACTIONS.DISCONNECTED);
+      /** searched user remove */
       setUserSearched();
       searchUserRef.current.value = '';
+      /** clear cursors */
       cursorRef.current.clearCursors();
+      /** clear page data */
       setPageData({});
+      /** clear editor contents (Quilljs content) */
       editorRef.current.editor.setContents({});
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
