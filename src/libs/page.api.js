@@ -34,8 +34,8 @@ export const createSpace = (userId, pageName) => {
 };
 
 /** deleteSpace */
-export const deleteSpace = (pageId) => {
-  const res = deleteHTTP(`/delete/${pageId}`);
+export const deletePage = (pageId) => {
+  const res = deleteHTTP(`/delete-page/${pageId}`);
   return res;
 };
 

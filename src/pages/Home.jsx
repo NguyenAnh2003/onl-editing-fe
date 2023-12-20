@@ -141,7 +141,13 @@ const Home = () => {
               {listPage.map((i, index) => (
                 <div key={index}>
                   {' '}
-                  <Page key={index} setPageId={setPageId} name={i.name} _id={i._id} />
+                  <Page
+                    key={index}
+                    setPageId={setPageId}
+                    name={i.name}
+                    pId={i._id}
+                    removePage={setListPage}
+                  />
                 </div>
               ))}
             </div>
@@ -155,7 +161,13 @@ const Home = () => {
               {colabPage.map((i, index) => (
                 <div key={index}>
                   {' '}
-                  <Page key={index} setPageId={setPageId} name={i.name} _id={i._id} />
+                  <Page
+                    key={index}
+                    setPageId={setPageId}
+                    name={i.name}
+                    pId={i._id}
+                    removePage={setColabPages}
+                  />
                 </div>
               ))}
             </div>
