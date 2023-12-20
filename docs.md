@@ -56,3 +56,10 @@ https://github.com/michellejt/button-component-variants/blob/main/src/components
 <!-- image sharing socketio -->
 https://www.cometchat.com/tutorials/react-chat-image-sharing
 https://morioh.com/a/b551f429ca28/implement-file-uploads-and-likes-in-a-react-chatroom
+
+<!-- encryption -->
+1. https://medium.com/@asttle1997/encryption-in-react-react-native-and-node-js-ceee589f429f
+2. https://search.brave.com/search?q=architecture+of+encryption+reactjs+nodejs&source=desktop
+3. https://www.section.io/engineering-education/data-encryption-and-decryption-in-node-js-using-crypto/
+4. https://www.workfall.com/learning/blog/how-to-perform-encryption-and-decryption-of-messages-using-crypto-in-node-js/
+5. https://medium.com/@vinaymahamuni/rsa-encryption-in-react-and-decryption-in-node-js-4e48dae2f072

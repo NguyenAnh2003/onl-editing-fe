@@ -5,6 +5,7 @@ import ACTIONS from '../actions';
 import { Toaster } from 'react-hot-toast';
 import { toast } from 'react-hot-toast';
 import Message from './Message';
+import { decryptHelper, encryptHelper } from '../libs/utils';
 const style = {
   position: 'absolute',
   top: '40%',
@@ -35,7 +36,8 @@ const ChatPanel = ({ open, handleClose }) => {
       /** disconnect */
 
       /** ai response */
-      socket.current.on(ACTIONS.AI_RESPONSE, async ({ response, sessionId }) => {
+      socket.current.on(ACTIONS.AI_RESPONSE, async ({ responseData }) => {
+        const { response, sessionId } = decryptHelper(responseData);
         if (response && sessionId) {
           console.log('from ai', response, 'session id', sessionId);
           setListMess((prev) => [...prev, response]);
@@ -61,11 +63,12 @@ const ChatPanel = ({ open, handleClose }) => {
         role: 'user',
         sessionId: socket.current.id,
       };
+      const requestData = encryptHelper(messageSending);
+
       setListMess((prev) => [...prev, messageSending]);
       /** socket emit */
       socket.current.emit(ACTIONS.SEND_MESSAGE, {
-        messageSending,
-        sessionId: socket.current.id,
+        requestData,
       });
       /** remove */
       message.current.value = '';
@@ -94,7 +97,7 @@ const ChatPanel = ({ open, handleClose }) => {
             <Typography id="transition-modal-title" variant="h6" component="h3">
               Ask AI
             </Typography>
-            <div>
+            <div className="h-[340px] overflow-y-scroll">
               {/** message */}
               <div className="flex flex-col gap-4 ">
                 {listMess.map((i, index) => (
@@ -103,14 +106,14 @@ const ChatPanel = ({ open, handleClose }) => {
                   </Message>
                 ))}
               </div>
-              {/** input */}
-              <input
-                ref={message}
-                onKeyDown={keyPressHandler}
-                className="absolute bottom-8 pt-2 pb-2 pl-1 w-[332px]"
-                placeholder="Enter message"
-              />
             </div>
+            {/** input */}
+            <input
+              ref={message}
+              onKeyDown={keyPressHandler}
+              className="absolute bottom-8 pt-2 pb-2 pl-1 w-[332px]"
+              placeholder="Enter message"
+            />
           </Box>
         </Fade>
       </Modal>

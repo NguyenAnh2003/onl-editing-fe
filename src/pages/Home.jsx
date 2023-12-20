@@ -51,6 +51,10 @@ const Home = () => {
       }
     };
     fetchData();
+
+    return () => {
+      setListPage([]);
+    };
   }, []);
 
   /**
@@ -77,6 +81,10 @@ const Home = () => {
       }
     };
     fetchColab();
+
+    return () => {
+      setColabPages([])
+    }
   }, []);
 
   /** create page handler  */
@@ -141,7 +149,13 @@ const Home = () => {
               {listPage.map((i, index) => (
                 <div key={index}>
                   {' '}
-                  <Page key={index} setPageId={setPageId} name={i.name} _id={i._id} />
+                  <Page
+                    setPageId={setPageId}
+                    name={i.name}
+                    pId={i._id}
+                    removePage={setListPage}
+                    isColab={false}
+                  />
                 </div>
               ))}
             </div>
@@ -151,11 +165,17 @@ const Home = () => {
           {/* colab pages */}
           <p className="text-xl font-bold pt-3 pb-5">Your colab pages</p>
           {colabPage && colabPage ? (
-            <div className="w-full divide-y gap-4 flex flex-col">
+            <div className="w-full divide-y gap-1 flex flex-col">
               {colabPage.map((i, index) => (
                 <div key={index}>
                   {' '}
-                  <Page key={index} setPageId={setPageId} name={i.name} _id={i._id} />
+                  <Page
+                    setPageId={setPageId}
+                    name={i.name}
+                    pId={i._id}
+                    isColab={true}
+                    removePage={null}
+                  />
                 </div>
               ))}
             </div>

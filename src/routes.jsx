@@ -6,6 +6,7 @@ import SignUpPage from './pages/SignUpPage';
 import { useContext } from 'react';
 import { UserContext } from './store/UserProvider';
 import Home from './pages/Home';
+import TestPage from './test/TestPage';
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
       {
         path: 'signup',
         element: <SignUpPage />,
+      },
+      {
+        path: 'test',
+        element: <TestPage />,
       },
     ],
   },

@@ -3,7 +3,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
 import { Menubar } from 'primereact/menubar';
-import React, { Fragment, useContext, useEffect, useRef, useState } from 'react';
+import React, { Fragment, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { initSocket } from '../socket';
 import ACTIONS from '../actions';
 import { UserContext } from '../store/UserProvider';
@@ -25,6 +25,7 @@ import UserCard from './UserCard';
 import { Toaster } from 'react-hot-toast';
 import { toast } from 'react-hot-toast';
 import { exportPDF } from '../libs/file.api';
+import { decryptHelper, encryptHelper } from '../libs/utils';
 /** Register cursor */
 Quill.register('modules/cursors', QuillCursors);
 
@@ -60,37 +61,47 @@ const Editor = ({ pageId }) => {
      * after that listening every event from client
      * including disconnect
      */
-    console.log('pageId', pageId);
+    if (!pageId) return;
     const onConnection = async () => {
       socketRef.current = await initSocket();
 
       console.log('from editor', socketRef.current.id);
       /** Join pageId request */
-      socketRef.current.emit(ACTIONS.JOIN, {
+      const requestData = encryptHelper({
         roomId: pageId,
         name: currentUser.username,
         userId: currentUser.userId,
       });
+      socketRef.current.emit(ACTIONS.JOIN, {
+        requestData,
+      });
 
       /** Joined pageId res */
-      socketRef.current.on(ACTIONS.JOINED, ({ clients, userJoined }) => {
-        setUserWs({ socketId: userJoined.socketId, name: userJoined.name, color: userJoined.color, userId: userJoined.userId }); //
+      socketRef.current.on(ACTIONS.JOINED, ({ responseData }) => {
+        const { clients, userJoined } = decryptHelper(responseData);
+        setUserWs({
+          socketId: userJoined.socketId,
+          name: userJoined.name,
+          color: userJoined.color,
+          userId: userJoined.userId,
+        }); //
         setGroup(clients);
-        // setData({ name: data.name, content: data.content });
       });
 
       /** load page */
-      socketRef.current.on(ACTIONS.LOAD_DOC, ({ data }) => {
-        console.log(data);
-        setPageData({ name: data.name, content: data.content });
-
-        if (data.content) {
-          editorRef.current?.editor.setContents(data.content);
+      socketRef.current.on(ACTIONS.LOAD_DOC, ({ responseData }) => {
+        const { name, content } = decryptHelper(responseData);
+        setPageData({ name, content });
+        console.log(decryptHelper(responseData));
+        if (content) {
+          setPageContent(content);
         }
       });
 
       /** onTextChange */
-      socketRef.current.on(ACTIONS.TEXT_CHANGE, ({ content, client: senderClient }) => {
+      socketRef.current.on(ACTIONS.TEXT_CHANGE, ({ responseData }) => {
+        const { content, client: senderClient } = decryptHelper(responseData);
+        console.log(responseData);
         if (currentUser.username !== senderClient) {
           editorRef.current?.editor?.updateContents(content, 'api');
           console.log('not equal');
@@ -98,14 +109,16 @@ const Editor = ({ pageId }) => {
       });
 
       /** cursor change */
-      socketRef.current.on(ACTIONS.CURSOR_CHANGE, ({ socketId, selection }) => {
+      socketRef.current.on(ACTIONS.CURSOR_CHANGE, ({ responseData }) => {
+        const { socketId, selection } = decryptHelper(responseData);
         if (selection) {
           cursorRef.current.moveCursor(socketId, selection);
         }
       });
 
       /** disconnect pageId */
-      socketRef.current.on(ACTIONS.DISCONNECTED, ({ socketId, name }) => {
+      socketRef.current.on(ACTIONS.DISCONNECTED, ({ responseData }) => {
+        const { socketId, name } = decryptHelper(responseData);
         setGroup((prev) => {
           return prev.filter((client) => client.socketId !== socketId);
         });
@@ -115,20 +128,31 @@ const Editor = ({ pageId }) => {
     };
     /** function call init */
     onConnection();
-    console.log('init connection', pageData && pageData.content);
 
     /** remove state */
     return () => {
+      /** socket, events remove */
       socketRef.current.disconnect();
+      socketRef.current.off(ACTIONS.JOIN)
       socketRef.current.off(ACTIONS.JOINED);
+      socketRef.current.off(ACTIONS.TEXT_CHANGE)
+      socketRef.current.off(ACTIONS.CURSOR_CHANGE)
       socketRef.current.off(ACTIONS.DISCONNECTED);
+      /** searched user remove */
       setUserSearched();
       searchUserRef.current.value = '';
+      /** clear cursors */
+      cursorRef.current.clearCursors();
+      /** clear page data */
+      setPageData({});
+      /** clear editor contents (Quilljs content) */
+      editorRef.current.editor.setContents({});
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageId]);
 
   useEffect(() => {
+    if (!cursorRef) return;
     /** init currentUser cursor */
     cursorRef.current = editorRef.current?.editor?.getModule('cursors');
     if (userWs && cursorRef.current && currentUser) {
@@ -139,21 +163,38 @@ const Editor = ({ pageId }) => {
 
   /** init clients cursors */
   useEffect(() => {
+    if (!cursorRef) return;
     console.log(group);
     group.forEach(({ socketId, name, color }) => {
       cursorRef.current.createCursor(socketId, name, color);
     });
-  }, [group]);
+  }, [group, pageId]);
+
+  const setPageContent = useCallback(
+    (content) => {
+      editorRef.current?.editor.setContents(content);
+    },
+    [pageId, pageData, editorRef]
+  );
 
   /** OnTextChange */
   const textChangeHandler = (content, delta, source) => {
-    console.log(content, delta, source);
+    // console.log(content, delta, source);
     if (!socketRef) {
       console.log('none socket');
       return;
     }
     if (source === 'user') {
-      socketRef && socketRef.current.emit(ACTIONS.TEXT_CHANGE, { roomId: pageId, content: delta, client: currentUser.username });
+      const requestData = encryptHelper({
+        roomId: pageId,
+        content: delta,
+        client: currentUser.username,
+      });
+      console.log(requestData);
+      socketRef &&
+        socketRef.current.emit(ACTIONS.TEXT_CHANGE, {
+          requestData,
+        });
     }
   };
   /** OnSelectionChange */
@@ -168,7 +209,10 @@ const Editor = ({ pageId }) => {
        * @param socketId
        * @param selection
        * */
-      socketRef.current.emit(ACTIONS.CURSOR_CHANGE, { roomId: pageId, socketId: userWs.socketId, selection });
+      const requestData = encryptHelper({ roomId: pageId, socketId: userWs.socketId, selection });
+      socketRef.current.emit(ACTIONS.CURSOR_CHANGE, {
+        requestData,
+      });
     }
   };
 
@@ -189,10 +233,11 @@ const Editor = ({ pageId }) => {
     /** send delta to server */
     const delta = editorRef.current.editor.getContents();
     const { data, status } = await exportPDF(delta, pageData.name);
+    const dencryptedResponse = decryptHelper(data);
     console.log(status);
     console.log(data);
     if (status === 200) {
-      saveAs(data, `${pageData.name}.pdf`);
+      saveAs(dencryptedResponse, `${pageData.name}.pdf`);
     }
   };
 
@@ -213,7 +258,11 @@ const Editor = ({ pageId }) => {
                   .filter((x) => x.userId !== currentUser.userId)
                   .map((i) => (
                     <Fragment key={i.socketId}>
-                      <Tooltip target={`#avatar_${i.socketId}`} content={i.name} position="top"></Tooltip>
+                      <Tooltip
+                        target={`#avatar_${i.socketId}`}
+                        content={i.name}
+                        position="top"
+                      ></Tooltip>
                       <Avatar
                         id={`avatar_${i.socketId}`}
                         label={i.name.charAt(0)}
@@ -253,7 +302,13 @@ const Editor = ({ pageId }) => {
                   onClick={searchHandler}
                   className="p-2.5 ml-2 text-sm font-medium text-white bg-black rounded-lg border border-black focus:outline-none "
                 >
-                  <svg className="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                  <svg
+                    className="w-4 h-4"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 20 20"
+                  >
                     <path
                       stroke="currentColor"
                       strokeLinecap="round"
@@ -267,7 +322,12 @@ const Editor = ({ pageId }) => {
               </form>
             </div>
             {userSearched ? (
-              <UserCard setValue={setUserSearched} pageId={pageId} userId={userSearched.userId} username={userSearched.username} />
+              <UserCard
+                setValue={setUserSearched}
+                pageId={pageId}
+                userId={userSearched.userId}
+                username={userSearched.username}
+              />
             ) : (
               <></>
             )}
