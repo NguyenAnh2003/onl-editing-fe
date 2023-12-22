@@ -28,6 +28,7 @@ import { toast } from 'react-hot-toast';
 import { exportPDF } from '../libs/file.api';
 import { decryptHelper, encryptHelper } from '../libs/utils';
 import SettingPageModal from './SettingPageModal';
+import { getOneColabPage } from '../libs/page.api';
 /** Register cursor */
 Quill.register('modules/cursors', QuillCursors);
 
@@ -59,6 +60,22 @@ const Editor = ({ pageId }) => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
+  /** validate editor -> disable */
+  useEffect(() => {
+    const editorValidate = async () => {
+      const { data, status } = await getOneColabPage(currentUser.userId, pageId);
+      if (status === 200) {
+        console.log('colab data', data);
+      }
+      const { mode } = data;
+      if (mode === 'view') {
+        console.log(mode);
+        editorRef.current.editor.disable();
+      }
+    };
+    editorValidate();
+  }, []);
 
   /** init socket - change correspond to pageId*/
   useEffect(() => {
@@ -196,7 +213,6 @@ const Editor = ({ pageId }) => {
         content: delta,
         client: currentUser.username,
       });
-      console.log(requestData);
       socketRef &&
         socketRef.current.emit(ACTIONS.TEXT_CHANGE, {
           requestData,
@@ -205,7 +221,6 @@ const Editor = ({ pageId }) => {
   };
   /** OnSelectionChange */
   const selectionChangeHandler = (selection, source) => {
-    console.log(selection, source);
     if (selection) {
       /** Move cursor code */
       cursorRef.current.moveCursor(userWs.socketId, selection);
@@ -226,9 +241,8 @@ const Editor = ({ pageId }) => {
   const searchHandler = async () => {
     /** searching with REST API */
     try {
-      const { data } = await searchUser(searchUserRef.current.value);
-      console.log(data);
-      setUserSearched(data);
+      const { data, status } = await searchUser(searchUserRef.current.value);
+      if (status === 200) setUserSearched(data);
     } catch (error) {
       console.error(error);
     }

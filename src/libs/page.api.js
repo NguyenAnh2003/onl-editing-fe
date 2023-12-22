@@ -32,6 +32,12 @@ export const getColabsByPageId = (pageId) => {
   return res;
 };
 
+/** getColabDataByUserIdAndPageId */
+export const getOneColabPage = (userId, pageId) => {
+  const res = getHTTP(`/get-one-colab-page/${userId}/${pageId}`);
+  return res;
+};
+
 /** createSpace REST*/
 export const createSpace = (userId, pageName) => {
   const res = postHTTP('/create-page', { userId, pageName });
