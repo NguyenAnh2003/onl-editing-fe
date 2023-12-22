@@ -12,7 +12,8 @@ import ReactQuill, { Quill } from 'react-quill';
 import { formats, module } from '../config/quill.config';
 import 'react-quill/dist/quill.snow.css';
 /** Pdf export */
-import { pdfExporter } from 'quill-to-pdf';
+import { FaSearch } from 'react-icons/fa';
+import { IoIosSettings } from 'react-icons/io';
 import { saveAs } from 'file-saver';
 /** Cursor */
 import QuillCursors from 'quill-cursors';
@@ -26,6 +27,7 @@ import { Toaster } from 'react-hot-toast';
 import { toast } from 'react-hot-toast';
 import { exportPDF } from '../libs/file.api';
 import { decryptHelper, encryptHelper } from '../libs/utils';
+import SettingPageModal from './SettingPageModal';
 /** Register cursor */
 Quill.register('modules/cursors', QuillCursors);
 
@@ -53,6 +55,10 @@ const Editor = ({ pageId }) => {
   const cursorRef = useRef(null);
   /** user WS */
   const [userWs, setUserWs] = useState({});
+  /** open modal */
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
   /** init socket - change correspond to pageId*/
   useEffect(() => {
@@ -133,10 +139,10 @@ const Editor = ({ pageId }) => {
     return () => {
       /** socket, events remove */
       socketRef.current.disconnect();
-      socketRef.current.off(ACTIONS.JOIN)
+      socketRef.current.off(ACTIONS.JOIN);
       socketRef.current.off(ACTIONS.JOINED);
-      socketRef.current.off(ACTIONS.TEXT_CHANGE)
-      socketRef.current.off(ACTIONS.CURSOR_CHANGE)
+      socketRef.current.off(ACTIONS.TEXT_CHANGE);
+      socketRef.current.off(ACTIONS.CURSOR_CHANGE);
       socketRef.current.off(ACTIONS.DISCONNECTED);
       /** searched user remove */
       setUserSearched();
@@ -245,9 +251,16 @@ const Editor = ({ pageId }) => {
     <div>
       {/** Toaster */}
       <Toaster reverseOrder={false} position="top-right" />
-      <p className="text-center text-2xl pt-3 mb-9">
-        <b className="underline">{pageData.name}</b>
-      </p>
+      <div className="flex flex-row justify-center items-center gap-4 mt-3 mb-7">
+        {/** page tilte */}
+        <p className="text-center text-2xl">
+          <b className="underline">{pageData.name}</b>
+        </p>
+        {/** page setting button */}
+        <IoIosSettings size={24} className="cursor-pointer" onClick={handleOpen} />
+        {/** setting page modal */}
+        {open ? <SettingPageModal open={open} handleClose={handleClose} pageId={pageId} /> : <></>}
+      </div>
       <div className="flex flex-row justify-between pl-3 pr-3 pb-4">
         <div>
           <Menubar
@@ -288,7 +301,7 @@ const Editor = ({ pageId }) => {
           {/* textfield search for users to add to pageId */}
           <div className="flex flex-col">
             <div>
-              <form className="flex items-center">
+              <form className="flex items-center gap-3">
                 <div className="w-full">
                   <input
                     type="text"
@@ -297,28 +310,7 @@ const Editor = ({ pageId }) => {
                     placeholder="Search by name..."
                   />
                 </div>
-                <button
-                  type="button"
-                  onClick={searchHandler}
-                  className="p-2.5 ml-2 text-sm font-medium text-white bg-black rounded-lg border border-black focus:outline-none "
-                >
-                  <svg
-                    className="w-4 h-4"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                    />
-                  </svg>
-                  <span className="sr-only">Search</span>
-                </button>
+                <FaSearch size={25} onClick={searchHandler} />
               </form>
             </div>
             {userSearched ? (
@@ -340,7 +332,6 @@ const Editor = ({ pageId }) => {
         ref={editorRef}
         modules={module}
         formats={formats}
-        // value={data.content}
         onChange={textChangeHandler}
         onChangeSelection={selectionChangeHandler}
       />

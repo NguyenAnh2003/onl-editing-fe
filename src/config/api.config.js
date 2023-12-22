@@ -53,6 +53,11 @@ export const getHTTP = async (url) => {
   return res;
 };
 
+export const putHTTP = async (url, params = {}) => {
+  const res = await axiosConfig.put(url, params);
+  return res;
+};
+
 export const deleteHTTP = async (url) => {
   const res = await axiosConfig.delete(url);
   return res;

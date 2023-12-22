@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast';
 import { toast } from 'react-hot-toast';
 import Message from './Message';
 import { decryptHelper, encryptHelper } from '../libs/utils';
+
 const style = {
   position: 'absolute',
   top: '40%',

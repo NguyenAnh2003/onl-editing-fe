@@ -7,7 +7,7 @@
  * Create, delete, get space using REST
  */
 
-import { postHTTP, getHTTP, deleteHTTP } from '../config/api.config';
+import { postHTTP, getHTTP, deleteHTTP, putHTTP } from '../config/api.config';
 
 /** getPages */
 export const getDataByPageId = (pageId) => {
@@ -21,9 +21,14 @@ export const getPagesByUserId = (userId) => {
   return res;
 };
 
-/** getColbPages */
+/** getColbPages byUserId */
 export const getColabPages = (userId) => {
   const res = getHTTP(`/get-colab-pages/${userId}`);
+  return res;
+};
+
+export const getColabsByPageId = (pageId) => {
+  const res = getHTTP(`/get-colab-pages-pageid/${pageId}`);
   return res;
 };
 
@@ -40,7 +45,13 @@ export const deletePage = (pageId) => {
 };
 
 /** add user to page */
-export const addUserToPage = (userId, pageId) => {
-  const res = postHTTP('/add-user-to-page', { userId, pageId });
+export const addUserToPage = (userId, pageId, username) => {
+  const res = postHTTP('/add-user-to-page', { userId, pageId, username });
+  return res;
+};
+
+/** update user mode in colab */
+export const updateUserMode = (userId, pageId, mode, username) => {
+  const res = putHTTP('/update-user-mode', { userId, pageId, mode, username });
   return res;
 };
