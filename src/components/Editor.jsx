@@ -28,7 +28,7 @@ import { toast } from 'react-hot-toast';
 import { exportPDF } from '../libs/file.api';
 import { decryptHelper, encryptHelper } from '../libs/utils';
 import SettingPageModal from './SettingPageModal';
-import { getOneColabPage } from '../libs/page.api';
+import { getDataByPageId, getOneColabPage } from '../libs/page.api';
 /** Register cursor */
 Quill.register('modules/cursors', QuillCursors);
 
@@ -63,19 +63,23 @@ const Editor = ({ pageId }) => {
 
   /** validate editor -> disable */
   useEffect(() => {
+    /** function validate define */
     const editorValidate = async () => {
       const { data, status } = await getOneColabPage(currentUser.userId, pageId);
       if (status === 200) {
-        console.log('colab data', data);
-      }
-      const { mode } = data;
-      if (mode === 'view') {
-        console.log(mode);
-        editorRef.current.editor.disable();
+        const { mode } = data;
+        if (mode === 'view') {
+          editorRef.current.editor.disable();
+        }
       }
     };
+    /** function call */
     editorValidate();
-  }, []);
+    /** remove from memory */
+    return () => {
+      editorRef.current.editor.enable();
+    };
+  }, [pageId]);
 
   /** init socket - change correspond to pageId*/
   useEffect(() => {

@@ -80,8 +80,15 @@ const Home = () => {
      */
     console.log('page name', pageName.current.value);
     try {
-      const data = await createSpace(currentUser.userId, pageName.current.value);
-      console.log(data);
+      const { data, status } = await createSpace(currentUser.userId, pageName.current.value);
+      if (status === 200) {
+        setTimeout(() => {
+          setListPage((prev) => {
+            return [...prev, data];
+          });
+        }, 300);
+        console.log(data);
+      }
     } catch (error) {
       console.error(error);
     }
