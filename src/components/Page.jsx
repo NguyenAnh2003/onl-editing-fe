@@ -7,14 +7,15 @@ import { deletePage } from '../libs/page.api';
 import { Toaster, toast } from 'react-hot-toast';
 import { ImCross } from 'react-icons/im';
 
-const Page = React.memo(({ setPageId, pId, name, removePage, isColab }) => {
+const Page = React.memo(({ setIsColab, setPageId, pId, name, removePage, isColab }) => {
   /** select with setPageId */
   const selectHandler = useCallback(() => {
     setPageId(pId);
+    setIsColab(isColab === true ? true : false);
     return () => {
       setPageId('');
     };
-  }, [pId, name]);
+  }, [pId, name, isColab]);
 
   /** remove page */
   const removeHandler = async () => {

@@ -31,6 +31,8 @@ const Home = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  /** */
+  const [isColabPage, setIsColab] = useState(false);
 
   /** fetching pages from userId */
   useEffect(() => {
@@ -124,6 +126,7 @@ const Home = () => {
                     pId={i?._id}
                     removePage={setListPage}
                     isColab={false}
+                    setIsColab={setIsColab}
                   />
                 </div>
               ))}
@@ -144,6 +147,7 @@ const Home = () => {
                     pId={i?._id}
                     isColab={true}
                     removePage={null}
+                    setIsColab={setIsColab}
                   />
                 </div>
               ))}
@@ -154,7 +158,7 @@ const Home = () => {
         </div>
         {/** Editor component */}
         <div className="w-5/7 h-full col-span-12 rounded border border-gray-500 bg-gray-200 sm:col-span-8">
-          {pageId ? <Editor pageId={pageId} /> : <>Click 1 page for editing</>}
+          {pageId ? <Editor isColab={isColabPage} pageId={pageId} /> : <>Click 1 page for editing</>}
         </div>
       </div>
     </div>

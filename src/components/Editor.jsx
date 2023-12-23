@@ -38,7 +38,7 @@ Quill.register('modules/cursors', QuillCursors);
  * get data from server
  * get page with pageId
  */
-const Editor = ({ pageId }) => {
+const Editor = ({ pageId, isColab }) => {
   const socketRef = useRef(null);
   /** currentUser */
   const { currentUser } = useContext(UserContext);
@@ -275,7 +275,11 @@ const Editor = ({ pageId }) => {
           <b className="underline">{pageData.name}</b>
         </p>
         {/** page setting button */}
-        <IoIosSettings size={24} className="cursor-pointer" onClick={handleOpen} />
+        {isColab === true ? (
+          <></>
+        ) : (
+          <IoIosSettings size={24} className="cursor-pointer" onClick={handleOpen} />
+        )}
         {/** setting page modal */}
         {open ? <SettingPageModal open={open} handleClose={handleClose} pageId={pageId} /> : <></>}
       </div>
