@@ -14,6 +14,7 @@ export const module = {
     // toggle to add extra line breaks when pasting HTML:
     matchVisual: false,
   },
+  // sanitize: false,
   cursors: true,
 };
 

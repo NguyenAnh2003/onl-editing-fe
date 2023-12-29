@@ -174,7 +174,6 @@ const Editor = ({ pageId, isColab }) => {
       /** clear editor contents (Quilljs content) */
       editorRef.current.editor.setContents({});
       /** clear selection */
-      editorRef.current.editor.setSelection({});
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageId]);
