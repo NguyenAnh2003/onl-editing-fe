@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef, useState } from 'react';
-import { updateUserMode } from '../libs/page.api';
+import { updateUserMode } from '../../libs/page.api';
 import { toast } from 'react-hot-toast';
 
 const ColabUserCard = ({ pageId, userId, username, mode }) => {

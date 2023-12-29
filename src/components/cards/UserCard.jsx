@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/display-name */
 import React from 'react';
-import { addUserToPage } from '../libs/page.api';
+import { addUserToPage } from '../../libs/page.api';
 import { FaSkullCrossbones } from 'react-icons/fa6';
 /** Toaster */
 import { Toaster } from 'react-hot-toast';
@@ -17,7 +17,7 @@ const UserCard = React.memo(({ pageId, userId, username, setValue }) => {
         console.log('add page', data);
         toast.success('Success in adding');
       } else {
-        toast.error(data)
+        toast.error(data);
       }
     } catch (error) {
       console.error(error);

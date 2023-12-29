@@ -7,10 +7,10 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { createSpace, getColabPages, getDataByPageId, getPagesByUserId } from '../libs/page.api';
 import Page from '../components/Page';
 import { UserContext } from '../store/UserProvider';
-import Editor from '../components/Editor';
 import { GoHubot } from 'react-icons/go';
 import ChatPanel from '../components/ChatPanel';
-import CreatePageModal from '../components/CreatePageModal';
+import Editor from '../components/Editor';
+import CreatePageModal from '../components/modals/CreatePageModal';
 
 /**
  * page list

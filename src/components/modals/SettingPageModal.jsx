@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Backdrop, Box, Fade, Modal, Typography } from '@mui/material';
 import { Toaster, toast } from 'react-hot-toast';
-import { getColabsByPageId, getDataByPageId } from '../libs/page.api';
-import ColabUserCard from './ColabUserCard';
+import { getColabsByPageId, getDataByPageId } from '../../libs/page.api';
+import ColabUserCard from '../cards/ColabUserCard';
 
 const style = {
   position: 'absolute',
@@ -60,15 +60,15 @@ const SettingPageModal = ({ open, handleClose, pageId }) => {
             </Typography>
             <div className="h-full w-full flex flex-col gap-3">
               {/** colab users */}
-                {colabUsers.map((i, index) => (
-                  <ColabUserCard
-                    key={index}
-                    userId={i.userId}
-                    username={i.username}
-                    mode={i.mode}
-                    pageId={pageId}
-                  />
-                ))}
+              {colabUsers.map((i, index) => (
+                <ColabUserCard
+                  key={index}
+                  userId={i.userId}
+                  username={i.username}
+                  mode={i.mode}
+                  pageId={pageId}
+                />
+              ))}
             </div>
           </Box>
         </Fade>

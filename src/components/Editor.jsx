@@ -17,20 +17,19 @@ import { IoIosSettings } from 'react-icons/io';
 import { saveAs } from 'file-saver';
 /** Cursor */
 import QuillCursors from 'quill-cursors';
-import { searchUser } from '../libs/user.api';
+import { exportPDF, getOneColabPage, searchUser } from '../libs';
 import { AvatarGroup } from 'primereact/avatargroup';
 import { Tooltip } from 'primereact/tooltip';
 import { Avatar } from 'primereact/avatar';
-import UserCard from './UserCard';
 /** Toaster */
 import { Toaster } from 'react-hot-toast';
 import { toast } from 'react-hot-toast';
-import { exportPDF } from '../libs/file.api';
 import { decryptHelper, encryptHelper } from '../libs/utils';
-import SettingPageModal from './SettingPageModal';
-import { getDataByPageId, getOneColabPage } from '../libs/page.api';
+import UserCard from './cards/UserCard';
+import SettingPageModal from './modals/SettingPageModal';
 /** Register cursor */
 Quill.register('modules/cursors', QuillCursors);
+Quill.register(Quill.import('attributors/style/align'), true);
 
 /**
  * init socket
@@ -223,6 +222,7 @@ const Editor = ({ pageId, isColab }) => {
         });
     }
   };
+
   /** OnSelectionChange */
   const selectionChangeHandler = (selection, source) => {
     if (selection) {
