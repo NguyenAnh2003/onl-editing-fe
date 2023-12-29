@@ -10,5 +10,5 @@ export const initSocket = async () => {
     transports: ['websocket'],
   };
 
-  return io('ws://localhost:5000/', options);
+  return io('http://localhost:5000/', options);
 };
