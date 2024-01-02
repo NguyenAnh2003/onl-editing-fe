@@ -36,7 +36,6 @@ const SignUpPage = () => {
               name="fullname"
               placeholder="Full Name"
             />
-
             <input
               ref={passwordRef}
               type="password"
@@ -51,7 +50,6 @@ const SignUpPage = () => {
               name="confirm_password"
               placeholder="Confirm Password"
             />
-
             <button
               type="button"
               onClick={submitHandler}

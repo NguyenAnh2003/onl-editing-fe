@@ -2,8 +2,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
-import { Menubar } from 'primereact/menubar';
-import React, { Fragment, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { initSocket } from '../socket';
 import ACTIONS from '../actions';
 import { UserContext } from '../store/UserProvider';
@@ -18,15 +17,13 @@ import { saveAs } from 'file-saver';
 /** Cursor */
 import QuillCursors from 'quill-cursors';
 import { exportPDF, getOneColabPage, searchUser } from '../libs';
-import { AvatarGroup } from 'primereact/avatargroup';
-import { Tooltip } from 'primereact/tooltip';
-import { Avatar } from 'primereact/avatar';
 /** Toaster */
 import { Toaster } from 'react-hot-toast';
 import { toast } from 'react-hot-toast';
 import { decryptHelper, encryptHelper } from '../libs/utils';
 import UserCard from './cards/UserCard';
 import SettingPageModal from './modals/SettingPageModal';
+import MenuActiveUsers from './MenuActiveUsers';
 /** Register cursor */
 Quill.register('modules/cursors', QuillCursors);
 Quill.register(Quill.import('attributors/style/align'), true);
@@ -74,10 +71,6 @@ const Editor = ({ pageId, isColab }) => {
     };
     /** function call */
     editorValidate();
-    /** remove from memory */
-    return () => {
-      editorRef.current.editor.enable();
-    };
   }, [pageId]);
 
   /** init socket - change correspond to pageId*/
@@ -230,7 +223,7 @@ const Editor = ({ pageId, isColab }) => {
       /** Move cursor code */
       cursorRef.current.moveCursor(userWs.socketId, selection);
       /**
-       *  socket Emit data
+       * socket emit data
        * @param pageId
        * @param socketId
        * @param selection
@@ -285,33 +278,8 @@ const Editor = ({ pageId, isColab }) => {
         {open ? <SettingPageModal open={open} handleClose={handleClose} pageId={pageId} /> : <></>}
       </div>
       <div className="flex flex-row justify-between pl-3 pr-3 pb-4">
-        <div>
-          <Menubar
-            model={[]}
-            start={
-              <AvatarGroup>
-                {group
-                  .filter((x) => x.userId !== currentUser.userId)
-                  .map((i) => (
-                    <Fragment key={i.socketId}>
-                      <Tooltip
-                        target={`#avatar_${i.socketId}`}
-                        content={i.name}
-                        position="top"
-                      ></Tooltip>
-                      <Avatar
-                        id={`avatar_${i.socketId}`}
-                        label={i.name.charAt(0)}
-                        shape="circle"
-                        style={{ backgroundColor: i.color }}
-                        className="transition-all	transition-duration-200 border-2 border-transparent text-white"
-                      />
-                    </Fragment>
-                  ))}
-              </AvatarGroup>
-            }
-          />
-        </div>
+        {/** menu active user */}
+        {group && currentUser && <MenuActiveUsers group={group} currentUser={currentUser} />}
         <div className="flex flex-row gap-2">
           <div>
             <button
