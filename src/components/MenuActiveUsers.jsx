@@ -1,3 +1,4 @@
+/* eslint-disable react/display-name */
 /* eslint-disable react/prop-types */
 import React, { Fragment } from 'react';
 import { AvatarGroup } from 'primereact/avatargroup';
@@ -5,7 +6,14 @@ import { Tooltip } from 'primereact/tooltip';
 import { Avatar } from 'primereact/avatar';
 import { Menubar } from 'primereact/menubar';
 
-const MenuActiveUsers = ({ group, currentUser }) => {
+const MenuActiveUsers = React.memo(({ group, currentUser }) => {
+
+  /**
+   * @prop: group
+   * @prop: currentUser
+   * used for display user joined in page
+   */
+
   return (
     <div>
       <Menubar
@@ -35,6 +43,6 @@ const MenuActiveUsers = ({ group, currentUser }) => {
       />
     </div>
   );
-};
+});
 
 export default MenuActiveUsers;
