@@ -3,6 +3,7 @@ import { updateUserMode } from '../../libs/page.api';
 import { toast } from 'react-hot-toast';
 
 const ColabUserCard = ({ pageId, userId, username, mode }) => {
+  /** setup mode value */
   const options = useMemo(() => {
     return mode === 'edit'
       ? [
