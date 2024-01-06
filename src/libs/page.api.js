@@ -57,7 +57,10 @@ export const addUserToPage = (userId, pageId, username) => {
 };
 
 /** update user mode in colab */
-export const updateUserMode = (userId, pageId, mode, username) => {
-  const res = putHTTP('/update-user-mode', { userId, pageId, mode, username });
+export const updateUserMode = (colabId, userId, pageId, mode, username) => {
+  /** specific colabId 
+   * body userId, pageId, mode, username
+  */
+  const res = putHTTP(`/update-user-mode/${colabId}`, { userId, pageId, mode, username });
   return res;
 };

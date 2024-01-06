@@ -2,7 +2,7 @@ import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { updateUserMode } from '../../libs/page.api';
 import { toast } from 'react-hot-toast';
 
-const ColabUserCard = ({ pageId, userId, username, mode }) => {
+const ColabUserCard = ({ colabId, pageId, userId, username, mode }) => {
   /** setup mode value */
   const options = useMemo(() => {
     return mode === 'edit'
@@ -14,7 +14,7 @@ const ColabUserCard = ({ pageId, userId, username, mode }) => {
           { id: 1, label: mode, value: mode },
           { id: 2, label: 'edit', value: 'edit' },
         ];
-  }, [mode, username, userId]);
+  }, [mode, username, userId, colabId]);
 
   /** update mode inside component */
   const updateModeHandler = useCallback(
@@ -23,7 +23,7 @@ const ColabUserCard = ({ pageId, userId, username, mode }) => {
       try {
         console.log({ userId, username, mode: e.target.value });
         /** update mode in colab api */
-        const { data, status } = await updateUserMode(userId, pageId, e.target.value, username);
+        const { data, status } = await updateUserMode(colabId, userId, pageId, e.target.value, username);
         if (status === 200) {
           console.log(data);
           toast.success('Change mode successfully');
@@ -32,7 +32,7 @@ const ColabUserCard = ({ pageId, userId, username, mode }) => {
         toast.error(error);
       }
     },
-    [userId, username, mode]
+    [userId, username, mode, colabId]
   );
 
   return (

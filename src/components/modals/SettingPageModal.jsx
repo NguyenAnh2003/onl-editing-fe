@@ -63,6 +63,7 @@ const SettingPageModal = ({ open, handleClose, pageId }) => {
               {colabUsers.map((i, index) => (
                 <ColabUserCard
                   key={index}
+                  colabId={i._id} // colabId -> _id
                   userId={i.userId}
                   username={i.username}
                   mode={i.mode}
