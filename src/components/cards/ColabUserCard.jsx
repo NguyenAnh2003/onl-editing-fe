@@ -35,9 +35,14 @@ const ColabUserCard = ({ colabId, pageId, userId, username, mode }) => {
     [userId, username, mode, colabId]
   );
 
+  /** onClick handler */
+  const clickHandler = useCallback(() => {
+    console.log(colabId);
+  }, [colabId])
+
   return (
     <>
-      <div className="w-full flex pt-3 pb-3 shadow pr-3">
+      <div className="w-full flex pt-3 pb-3 shadow pr-3" onClick={clickHandler}>
         <div className="flex-1 min-w-0 ms-4">
           <p className="text-sm font-semibold">{username}</p>
         </div>

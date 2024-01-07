@@ -30,7 +30,7 @@ const ChatPanel = ({ open, handleClose }) => {
 
   useEffect(() => {
     const onConnection = async () => {
-      socket.current = await initSocket();
+      socket.current = await initSocket(); // init socket
 
       console.log('help', socket.current);
 
@@ -64,6 +64,7 @@ const ChatPanel = ({ open, handleClose }) => {
         role: 'user',
         sessionId: socket.current.id,
       };
+      
       const requestData = encryptHelper(messageSending);
 
       setListMess((prev) => [...prev, messageSending]);

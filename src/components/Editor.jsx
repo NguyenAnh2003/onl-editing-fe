@@ -71,6 +71,9 @@ const Editor = ({ pageId, isColab }) => {
     };
     /** function call */
     editorValidate();
+    return () => {
+      editorRef.current.editor.enable();
+    };
   }, [pageId]);
 
   /** init socket - change correspond to pageId*/
