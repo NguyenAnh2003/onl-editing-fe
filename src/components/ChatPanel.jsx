@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast';
 import { toast } from 'react-hot-toast';
 import Message from './Message';
 import { decryptHelper, encryptHelper } from '../libs/utils';
+
 const style = {
   position: 'absolute',
   top: '40%',
@@ -29,7 +30,7 @@ const ChatPanel = ({ open, handleClose }) => {
 
   useEffect(() => {
     const onConnection = async () => {
-      socket.current = await initSocket();
+      socket.current = await initSocket(); // init socket
 
       console.log('help', socket.current);
 
@@ -63,6 +64,7 @@ const ChatPanel = ({ open, handleClose }) => {
         role: 'user',
         sessionId: socket.current.id,
       };
+      
       const requestData = encryptHelper(messageSending);
 
       setListMess((prev) => [...prev, messageSending]);

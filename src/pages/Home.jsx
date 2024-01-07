@@ -2,20 +2,15 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-unused-vars */
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { createSpace, getColabPages, getDataByPageId, getPagesByUserId } from '../libs/page.api';
 import Page from '../components/Page';
 import { UserContext } from '../store/UserProvider';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import Popper from '@mui/material/Popper';
-import PopupState, { bindToggle, bindPopper } from 'material-ui-popup-state';
-import Fade from '@mui/material/Fade';
-import Paper from '@mui/material/Paper';
-import Editor from '../components/Editor';
 import { GoHubot } from 'react-icons/go';
 import ChatPanel from '../components/ChatPanel';
+import Editor from '../components/Editor';
+import CreatePageModal from '../components/modals/CreatePageModal';
 
 /**
  * page list
@@ -36,6 +31,8 @@ const Home = () => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  /** */
+  const [isColabPage, setIsColab] = useState(false);
 
   /** fetching pages from userId */
   useEffect(() => {
@@ -43,9 +40,28 @@ const Home = () => {
       try {
         /** fetch pages by userId*/
         const res = await getPagesByUserId(currentUser.userId);
-        // console.log(res.data);
-        /** data */
-        setListPage(res.data);
+        if (res.status === 200) {
+          setListPage(res.data);
+        }
+        /** colabs */
+        const colabResults = await getColabPages(currentUser.userId);
+        console.log(colabResults.data);
+        if (colabResults.data) {
+          const responseColabs = [];
+          await Promise.all(
+            colabResults.data.map(async (x) => {
+              const colabPage = await getDataByPageId(x.pageId)
+                .then(({ status, data }) => {
+                  if (status === 200) return data;
+                })
+                .catch((err) => console.error(err));
+              /** set colab pages */
+              responseColabs.push(colabPage);
+            })
+          );
+          console.log('response colabs', responseColabs);
+          setColabPages(responseColabs);
+        }
       } catch (error) {
         console.error(error);
       }
@@ -54,81 +70,36 @@ const Home = () => {
 
     return () => {
       setListPage([]);
+      setColabPages([]);
     };
-  }, []);
-
-  /**
-   * get colab pages with array of pageId
-   * using each pageId and fetching data of each
-   */
-  useEffect(() => {
-    const fetchColab = async () => {
-      const res = await getColabPages(currentUser.userId);
-      // const colabs = await Promise.all()
-      if (res.data) {
-        const responseColabs = [];
-        await Promise.all(
-          res.data.map(async (i) => {
-            const colabPage = await getDataByPageId(i.pageId)
-              .then((res) => res.data)
-              .catch((err) => console.error(err));
-            /** set colab pages */
-            responseColabs.push(colabPage);
-          })
-        );
-        console.log('response colabs', responseColabs);
-        setColabPages(responseColabs);
-      }
-    };
-    fetchColab();
-
-    return () => {
-      setColabPages([])
-    }
   }, []);
 
   /** create page handler  */
-  const createPageHandler = async () => {
+  const createPageHandler = useCallback(async () => {
     /**
      * @param userId
      * @param pageName
      */
     console.log('page name', pageName.current.value);
     try {
-      const data = await createSpace(currentUser.userId, pageName.current.value);
-      console.log(data);
+      const { data, status } = await createSpace(currentUser.userId, pageName.current.value);
+      if (status === 200) {
+        setTimeout(() => {
+          setListPage((prev) => {
+            return [...prev, data];
+          });
+        }, 300);
+        console.log(data);
+      }
     } catch (error) {
       console.error(error);
     }
-  };
-
-  /** ask AI HTTP */
+  }, [pageName, currentUser]);
 
   return (
     <div className="">
       {/* Modal */}
-      <div className="relative top-1 mb-3 ml-5">
-        <PopupState variant="popper" popupId="demo-popup-popper">
-          {(popupState) => (
-            <div className="left-5">
-              <Button variant="contained" {...bindToggle(popupState)}>
-                Create new Page
-              </Button>
-              <Popper {...bindPopper(popupState)} transition>
-                {({ TransitionProps }) => (
-                  <Fade {...TransitionProps} timeout={350}>
-                    <Paper>
-                      <Typography sx={{ p: 2 }}>Name of your Page</Typography>
-                      <input ref={pageName} />
-                      <button onClick={createPageHandler}>Create</button>
-                    </Paper>
-                  </Fade>
-                )}
-              </Popper>
-            </div>
-          )}
-        </PopupState>
-      </div>
+      <CreatePageModal pageName={pageName && pageName} createPageHandler={createPageHandler} />
       {/** ask ai pop up */}
       <div className="relative -top-4 mb-10 left-80 ml-10 w-fit">
         <div className="absolute left-36 flex flex-row gap-3">
@@ -151,10 +122,11 @@ const Home = () => {
                   {' '}
                   <Page
                     setPageId={setPageId}
-                    name={i.name}
-                    pId={i._id}
+                    name={i?.name}
+                    pId={i?._id}
                     removePage={setListPage}
                     isColab={false}
+                    setIsColab={setIsColab}
                   />
                 </div>
               ))}
@@ -171,10 +143,11 @@ const Home = () => {
                   {' '}
                   <Page
                     setPageId={setPageId}
-                    name={i.name}
-                    pId={i._id}
+                    name={i?.name}
+                    pId={i?._id}
                     isColab={true}
                     removePage={null}
+                    setIsColab={setIsColab}
                   />
                 </div>
               ))}
@@ -185,7 +158,7 @@ const Home = () => {
         </div>
         {/** Editor component */}
         <div className="w-5/7 h-full col-span-12 rounded border border-gray-500 bg-gray-200 sm:col-span-8">
-          {pageId ? <Editor pageId={pageId} /> : <>Click 1 page for editing</>}
+          {pageId ? <Editor isColab={isColabPage} pageId={pageId} /> : <>Click 1 page for editing</>}
         </div>
       </div>
     </div>

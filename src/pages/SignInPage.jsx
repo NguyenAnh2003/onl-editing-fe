@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { userLogin } from '../libs/user.api';
 import { UserContext } from '../store/UserProvider';
 import { decryptHelper } from '../libs/utils';
+import Input from '../components/Input';
 
 const SignInPage = () => {
   const nameRef = useRef(null);
@@ -29,27 +30,35 @@ const SignInPage = () => {
       console.error(error);
     }
   };
+
+  const inputProps = [
+    {
+      props: {
+        name: 'name',
+        type: 'text',
+        placeholder: 'Your full name',
+      },
+      ref: nameRef,
+    },
+    {
+      props: {
+        name: 'password',
+        type: 'password',
+        placeholder: 'Your password',
+      },
+      ref: passwordRef,
+    },
+  ];
+
   return (
     <div>
       <div className="bg-grey-lighter min-h-screen flex flex-col">
         <div className="container max-w-sm mx-auto flex-1 flex flex-col items-center justify-center px-2">
           <div className="bg-white px-6 py-8 rounded shadow-md text-black w-full">
             <h1 className="mb-8 text-3xl text-center">Sign in</h1>
-            <input
-              ref={nameRef}
-              type="text"
-              className="block border border-grey-light w-full p-3 rounded mb-4"
-              name="fullname"
-              placeholder="Full Name"
-            />
-
-            <input
-              ref={passwordRef}
-              type="password"
-              className="block border border-grey-light w-full p-3 rounded mb-4"
-              name="password"
-              placeholder="Password"
-            />
+            {inputProps.map((i, index) => (
+              <Input key={index} {...i.props} ref={i.ref} />
+            ))}
 
             <button
               type="button"

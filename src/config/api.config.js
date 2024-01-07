@@ -43,13 +43,18 @@ axiosConfig.interceptors.response.use(
  * POST and GET
  */
 
-export const postHTTP = async (url, params = {}, options) => {
-  const res = await axiosConfig.post(url, params, options);
+export const postHTTP = async (url, params = {}) => {
+  const res = await axiosConfig.post(url, params);
   return res;
 };
 
 export const getHTTP = async (url) => {
   const res = await axiosConfig.get(url);
+  return res;
+};
+
+export const putHTTP = async (url, params = {}) => {
+  const res = await axiosConfig.put(url, params);
   return res;
 };
 

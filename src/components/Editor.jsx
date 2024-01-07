@@ -2,8 +2,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 /* eslint-disable react/display-name */
-import { Menubar } from 'primereact/menubar';
-import React, { Fragment, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { initSocket } from '../socket';
 import ACTIONS from '../actions';
 import { UserContext } from '../store/UserProvider';
@@ -12,22 +11,22 @@ import ReactQuill, { Quill } from 'react-quill';
 import { formats, module } from '../config/quill.config';
 import 'react-quill/dist/quill.snow.css';
 /** Pdf export */
-import { pdfExporter } from 'quill-to-pdf';
+import { FaSearch } from 'react-icons/fa';
+import { IoIosSettings } from 'react-icons/io';
 import { saveAs } from 'file-saver';
 /** Cursor */
 import QuillCursors from 'quill-cursors';
-import { searchUser } from '../libs/user.api';
-import { AvatarGroup } from 'primereact/avatargroup';
-import { Tooltip } from 'primereact/tooltip';
-import { Avatar } from 'primereact/avatar';
-import UserCard from './UserCard';
+import { exportPDF, getOneColabPage, searchUser } from '../libs';
 /** Toaster */
 import { Toaster } from 'react-hot-toast';
 import { toast } from 'react-hot-toast';
-import { exportPDF } from '../libs/file.api';
 import { decryptHelper, encryptHelper } from '../libs/utils';
+import UserCard from './cards/UserCard';
+import SettingPageModal from './modals/SettingPageModal';
+import MenuActiveUsers from './MenuActiveUsers';
 /** Register cursor */
 Quill.register('modules/cursors', QuillCursors);
+Quill.register(Quill.import('attributors/style/align'), true);
 
 /**
  * init socket
@@ -35,7 +34,7 @@ Quill.register('modules/cursors', QuillCursors);
  * get data from server
  * get page with pageId
  */
-const Editor = ({ pageId }) => {
+const Editor = ({ pageId, isColab }) => {
   const socketRef = useRef(null);
   /** currentUser */
   const { currentUser } = useContext(UserContext);
@@ -53,6 +52,29 @@ const Editor = ({ pageId }) => {
   const cursorRef = useRef(null);
   /** user WS */
   const [userWs, setUserWs] = useState({});
+  /** open modal */
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  /** validate editor -> disable */
+  useEffect(() => {
+    /** function validate define */
+    const editorValidate = async () => {
+      const { data, status } = await getOneColabPage(currentUser.userId, pageId);
+      if (status === 200) {
+        const { mode } = data;
+        if (mode === 'view') {
+          editorRef.current.editor.disable();
+        }
+      }
+    };
+    /** function call */
+    editorValidate();
+    return () => {
+      editorRef.current.editor.enable();
+    };
+  }, [pageId]);
 
   /** init socket - change correspond to pageId*/
   useEffect(() => {
@@ -133,10 +155,10 @@ const Editor = ({ pageId }) => {
     return () => {
       /** socket, events remove */
       socketRef.current.disconnect();
-      socketRef.current.off(ACTIONS.JOIN)
+      socketRef.current.off(ACTIONS.JOIN);
       socketRef.current.off(ACTIONS.JOINED);
-      socketRef.current.off(ACTIONS.TEXT_CHANGE)
-      socketRef.current.off(ACTIONS.CURSOR_CHANGE)
+      socketRef.current.off(ACTIONS.TEXT_CHANGE);
+      socketRef.current.off(ACTIONS.CURSOR_CHANGE);
       socketRef.current.off(ACTIONS.DISCONNECTED);
       /** searched user remove */
       setUserSearched();
@@ -147,6 +169,7 @@ const Editor = ({ pageId }) => {
       setPageData({});
       /** clear editor contents (Quilljs content) */
       editorRef.current.editor.setContents({});
+      /** clear selection */
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageId]);
@@ -190,21 +213,20 @@ const Editor = ({ pageId }) => {
         content: delta,
         client: currentUser.username,
       });
-      console.log(requestData);
       socketRef &&
         socketRef.current.emit(ACTIONS.TEXT_CHANGE, {
           requestData,
         });
     }
   };
+
   /** OnSelectionChange */
   const selectionChangeHandler = (selection, source) => {
-    console.log(selection, source);
     if (selection) {
       /** Move cursor code */
       cursorRef.current.moveCursor(userWs.socketId, selection);
       /**
-       *  socket Emit data
+       * socket emit data
        * @param pageId
        * @param socketId
        * @param selection
@@ -220,9 +242,8 @@ const Editor = ({ pageId }) => {
   const searchHandler = async () => {
     /** searching with REST API */
     try {
-      const { data } = await searchUser(searchUserRef.current.value);
-      console.log(data);
-      setUserSearched(data);
+      const { data, status } = await searchUser(searchUserRef.current.value);
+      if (status === 200) setUserSearched(data);
     } catch (error) {
       console.error(error);
     }
@@ -245,37 +266,23 @@ const Editor = ({ pageId }) => {
     <div>
       {/** Toaster */}
       <Toaster reverseOrder={false} position="top-right" />
-      <p className="text-center text-2xl pt-3 mb-9">
-        <b className="underline">{pageData.name}</b>
-      </p>
+      <div className="flex flex-row justify-center items-center gap-4 mt-3 mb-7">
+        {/** page tilte */}
+        <p className="text-center text-2xl">
+          <b className="underline">{pageData.name}</b>
+        </p>
+        {/** page setting button */}
+        {isColab === true ? (
+          <></>
+        ) : (
+          <IoIosSettings size={24} className="cursor-pointer" onClick={handleOpen} />
+        )}
+        {/** setting page modal */}
+        {open ? <SettingPageModal open={open} handleClose={handleClose} pageId={pageId} /> : <></>}
+      </div>
       <div className="flex flex-row justify-between pl-3 pr-3 pb-4">
-        <div>
-          <Menubar
-            model={[]}
-            start={
-              <AvatarGroup>
-                {group
-                  .filter((x) => x.userId !== currentUser.userId)
-                  .map((i) => (
-                    <Fragment key={i.socketId}>
-                      <Tooltip
-                        target={`#avatar_${i.socketId}`}
-                        content={i.name}
-                        position="top"
-                      ></Tooltip>
-                      <Avatar
-                        id={`avatar_${i.socketId}`}
-                        label={i.name.charAt(0)}
-                        shape="circle"
-                        style={{ backgroundColor: i.color }}
-                        className="transition-all	transition-duration-200 border-2 border-transparent text-white"
-                      />
-                    </Fragment>
-                  ))}
-              </AvatarGroup>
-            }
-          />
-        </div>
+        {/** menu active user */}
+        {group && currentUser && <MenuActiveUsers group={group} currentUser={currentUser} />}
         <div className="flex flex-row gap-2">
           <div>
             <button
@@ -288,7 +295,7 @@ const Editor = ({ pageId }) => {
           {/* textfield search for users to add to pageId */}
           <div className="flex flex-col">
             <div>
-              <form className="flex items-center">
+              <form className="flex items-center gap-3">
                 <div className="w-full">
                   <input
                     type="text"
@@ -297,28 +304,7 @@ const Editor = ({ pageId }) => {
                     placeholder="Search by name..."
                   />
                 </div>
-                <button
-                  type="button"
-                  onClick={searchHandler}
-                  className="p-2.5 ml-2 text-sm font-medium text-white bg-black rounded-lg border border-black focus:outline-none "
-                >
-                  <svg
-                    className="w-4 h-4"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
-                    />
-                  </svg>
-                  <span className="sr-only">Search</span>
-                </button>
+                <FaSearch size={25} onClick={searchHandler} />
               </form>
             </div>
             {userSearched ? (
@@ -340,7 +326,6 @@ const Editor = ({ pageId }) => {
         ref={editorRef}
         modules={module}
         formats={formats}
-        // value={data.content}
         onChange={textChangeHandler}
         onChangeSelection={selectionChangeHandler}
       />
