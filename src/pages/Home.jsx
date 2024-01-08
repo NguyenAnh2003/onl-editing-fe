@@ -163,7 +163,9 @@ const Home = () => {
           {pageId ? (
             <Editor isColab={isColabPage} pageId={pageId} />
           ) : (
-            <>Click 1 page for editing</>
+            <div className='flex flex-col align-middle justify-center'>
+              <p className='text-center font-semibold'>Click 1 page for editing</p>
+            </div>
           )}
         </div>
       </div>
