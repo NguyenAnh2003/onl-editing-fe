@@ -11,6 +11,7 @@ import { GoHubot } from 'react-icons/go';
 import ChatPanel from '../components/ChatPanel';
 import Editor from '../components/Editor';
 import CreatePageModal from '../components/modals/CreatePageModal';
+import { toast } from 'react-hot-toast';
 
 /**
  * page list
@@ -82,19 +83,25 @@ const Home = () => {
      */
     console.log('page name', pageName.current.value);
     try {
-      if (pageName === null) return;
-      const { data, status } = await createSpace(currentUser.userId, pageName.current.value);
-      if (status === 200) {
-        setTimeout(() => {
-          setListPage((prev) => {
-            return [...prev, data];
-          });
-        }, 300);
-        console.log(data);
-        pageName.current.value = '' // set pageName ref to empty
+      if (pageName.current.value === '') {
+        toast.error('Page name is null');
+        // return;
+      } else {
+        const { data, status } = await createSpace(currentUser.userId, pageName.current.value);
+        if (status === 200) {
+          toast.success('Create page successfully');
+          setTimeout(() => {
+            setListPage((prev) => {
+              return [...prev, data];
+            });
+          }, 300);
+          console.log(data);
+          pageName.current.value = ''; // set pageName ref to empty
+        }
       }
     } catch (error) {
       console.error(error);
+      toast.error('Cannot create page');
     }
   }, [pageName, currentUser]);
 
@@ -163,8 +170,8 @@ const Home = () => {
           {pageId ? (
             <Editor isColab={isColabPage} pageId={pageId} />
           ) : (
-            <div className='flex flex-col align-middle justify-center'>
-              <p className='text-center font-semibold'>Click 1 page for editing</p>
+            <div className="flex flex-col align-middle justify-center">
+              <p className="text-center font-semibold">Click 1 page for editing</p>
             </div>
           )}
         </div>
