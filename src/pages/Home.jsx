@@ -82,6 +82,7 @@ const Home = () => {
      */
     console.log('page name', pageName.current.value);
     try {
+      if (pageName === null) return;
       const { data, status } = await createSpace(currentUser.userId, pageName.current.value);
       if (status === 200) {
         setTimeout(() => {
@@ -90,6 +91,7 @@ const Home = () => {
           });
         }, 300);
         console.log(data);
+        pageName.current.value = '' // set pageName ref to empty
       }
     } catch (error) {
       console.error(error);
@@ -158,7 +160,11 @@ const Home = () => {
         </div>
         {/** Editor component */}
         <div className="w-5/7 h-full col-span-12 rounded border border-gray-500 bg-gray-200 sm:col-span-8">
-          {pageId ? <Editor isColab={isColabPage} pageId={pageId} /> : <>Click 1 page for editing</>}
+          {pageId ? (
+            <Editor isColab={isColabPage} pageId={pageId} />
+          ) : (
+            <>Click 1 page for editing</>
+          )}
         </div>
       </div>
     </div>
