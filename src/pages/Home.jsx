@@ -106,19 +106,9 @@ const Home = () => {
   }, [pageName, currentUser]);
 
   return (
-    <div className="">
+    <div className="relative">
       {/* Modal */}
       <CreatePageModal pageName={pageName && pageName} createPageHandler={createPageHandler} />
-      {/** ask ai pop up */}
-      <div className="relative -top-4 mb-10 left-80 ml-10 w-fit">
-        <div className="absolute left-36 flex flex-row gap-3">
-          <GoHubot
-            onClick={handleOpen}
-            size={40}
-            className="p-1 border border-solid border-black cursor-pointer"
-          />
-        </div>
-      </div>
       {/** chat panel */}
       {open ? <ChatPanel open={open} handleClose={handleClose} /> : <></>}
       <div className="mx-auto pl-5 pr-5 grid grid-cols-12 gap-2 h-screen">
@@ -174,6 +164,16 @@ const Home = () => {
               <p className="text-center font-semibold">Click 1 page for editing</p>
             </div>
           )}
+        </div>
+        {/** ask ai pop up */}
+        <div className="absolute right-16 bottom-28">
+          <div className="">
+            <GoHubot
+              onClick={handleOpen}
+              size={50}
+              className="p-2 rounded-full border border-solid border-black cursor-pointer bg-white"
+            />
+          </div>
         </div>
       </div>
     </div>
