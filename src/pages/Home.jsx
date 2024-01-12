@@ -11,6 +11,7 @@ import { GoHubot } from 'react-icons/go';
 import ChatPanel from '../components/ChatPanel';
 import Editor from '../components/Editor';
 import CreatePageModal from '../components/modals/CreatePageModal';
+import { toast } from 'react-hot-toast';
 
 /**
  * page list
@@ -82,34 +83,32 @@ const Home = () => {
      */
     console.log('page name', pageName.current.value);
     try {
-      const { data, status } = await createSpace(currentUser.userId, pageName.current.value);
-      if (status === 200) {
-        setTimeout(() => {
-          setListPage((prev) => {
-            return [...prev, data];
-          });
-        }, 300);
-        console.log(data);
+      if (pageName.current.value === '') {
+        toast.error('Page name is null');
+        // return;
+      } else {
+        const { data, status } = await createSpace(currentUser.userId, pageName.current.value);
+        if (status === 200) {
+          toast.success('Create page successfully');
+          setTimeout(() => {
+            setListPage((prev) => {
+              return [...prev, data];
+            });
+          }, 300);
+          console.log(data);
+          pageName.current.value = ''; // set pageName ref to empty
+        }
       }
     } catch (error) {
       console.error(error);
+      toast.error('Cannot create page');
     }
   }, [pageName, currentUser]);
 
   return (
-    <div className="">
+    <div className="relative">
       {/* Modal */}
       <CreatePageModal pageName={pageName && pageName} createPageHandler={createPageHandler} />
-      {/** ask ai pop up */}
-      <div className="relative -top-4 mb-10 left-80 ml-10 w-fit">
-        <div className="absolute left-36 flex flex-row gap-3">
-          <GoHubot
-            onClick={handleOpen}
-            size={40}
-            className="p-1 border border-solid border-black cursor-pointer"
-          />
-        </div>
-      </div>
       {/** chat panel */}
       {open ? <ChatPanel open={open} handleClose={handleClose} /> : <></>}
       <div className="mx-auto pl-5 pr-5 grid grid-cols-12 gap-2 h-screen">
@@ -158,7 +157,23 @@ const Home = () => {
         </div>
         {/** Editor component */}
         <div className="w-5/7 h-full col-span-12 rounded border border-gray-500 bg-gray-200 sm:col-span-8">
-          {pageId ? <Editor isColab={isColabPage} pageId={pageId} /> : <>Click 1 page for editing</>}
+          {pageId ? (
+            <Editor isColab={isColabPage} pageId={pageId} />
+          ) : (
+            <div className="flex flex-col align-middle justify-center">
+              <p className="text-center font-semibold">Click 1 page for editing</p>
+            </div>
+          )}
+        </div>
+        {/** ask ai pop up */}
+        <div className="absolute right-16 bottom-28">
+          <div className="">
+            <GoHubot
+              onClick={handleOpen}
+              size={50}
+              className="p-2 rounded-full border border-solid border-black cursor-pointer bg-white"
+            />
+          </div>
         </div>
       </div>
     </div>
