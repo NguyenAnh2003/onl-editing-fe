@@ -82,7 +82,7 @@ const Editor = ({ pageId, isColab }) => {
       editorRef.current.editor.format('color', value);
 
       const content = editorRef.current.editor.getContents();
-      setFlag(true);
+      setFlag(!flag);
       console.log('content with color', content);
     });
 
@@ -100,6 +100,7 @@ const Editor = ({ pageId, isColab }) => {
         const content = editorRef.current.editor.getContents();
         console.log('update', content);
         socketRef.current.emit(ACTIONS.SAVE_TEXT, { content, pageId });
+        setFlag(!flag);
       });
     }
   }, [flag]);
