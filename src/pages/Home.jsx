@@ -106,74 +106,76 @@ const Home = () => {
   }, [pageName, currentUser]);
 
   return (
-    <div className="relative">
-      {/* Modal */}
-      <CreatePageModal pageName={pageName && pageName} createPageHandler={createPageHandler} />
-      {/** chat panel */}
-      {open ? <ChatPanel open={open} handleClose={handleClose} /> : <></>}
-      <div className="mx-auto pl-5 pr-5 grid grid-cols-12 gap-2 h-screen">
-        <div className="pl-2 pr-2 col-span-12 w-4/3 h-full rounded border border-gray-400 bg-gray-200 sm:col-span-4">
-          <p className="text-xl font-bold pb-5">Your pages</p>
-          {listPage && listPage ? (
-            <div className="w-full gap-1 flex flex-col">
-              {listPage.map((i, index) => (
-                <div key={index}>
-                  {' '}
-                  <Page
-                    setPageId={setPageId}
-                    name={i?.name}
-                    pId={i?._id}
-                    removePage={setListPage}
-                    isColab={false}
-                    setIsColab={setIsColab}
-                  />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-xl">Create your own page</p>
-          )}
-          {/* colab pages */}
-          <p className="text-xl font-bold pt-3 pb-5">Your colab pages</p>
-          {colabPage && colabPage ? (
-            <div className="w-full divide-y gap-1 flex flex-col">
-              {colabPage.map((i, index) => (
-                <div key={index}>
-                  {' '}
-                  <Page
-                    setPageId={setPageId}
-                    name={i?.name}
-                    pId={i?._id}
-                    isColab={true}
-                    removePage={null}
-                    setIsColab={setIsColab}
-                  />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-xl font-bold ">Don't have colab pages yet</p>
-          )}
-        </div>
-        {/** Editor component */}
-        <div className="w-5/7 h-full col-span-12 rounded border border-gray-500 bg-gray-200 sm:col-span-8">
-          {pageId ? (
-            <Editor isColab={isColabPage} pageId={pageId} />
-          ) : (
-            <div className="flex flex-col align-middle justify-center">
-              <p className="text-center font-semibold">Click 1 page for editing</p>
-            </div>
-          )}
-        </div>
-        {/** ask ai pop up */}
-        <div className="absolute right-16 bottom-28">
-          <div className="">
-            <GoHubot
-              onClick={handleOpen}
-              size={50}
-              className="p-2 rounded-full border border-solid border-black cursor-pointer bg-white"
-            />
+    <div>
+      <div className="relative">
+        {/* Modal */}
+        <CreatePageModal pageName={pageName && pageName} createPageHandler={createPageHandler} />
+        {/** chat panel */}
+        {open ? <ChatPanel open={open} handleClose={handleClose} /> : <></>}
+        <div className="mx-auto pl-5 pr-5 grid grid-cols-12 gap-2 h-screen">
+          <div className="pl-2 pr-2 col-span-12 w-4/3 h-full rounded border border-gray-400 bg-gray-200 sm:col-span-4">
+            <p className="text-xl font-bold pb-5">Your pages</p>
+            {listPage && listPage ? (
+              <div className="w-full gap-1 flex flex-col">
+                {listPage.map((i, index) => (
+                  <div key={index}>
+                    {' '}
+                    <Page
+                      setPageId={setPageId}
+                      name={i?.name}
+                      pId={i?._id}
+                      removePage={setListPage}
+                      isColab={false}
+                      setIsColab={setIsColab}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xl">Create your own page</p>
+            )}
+            {/* colab pages */}
+            <p className="text-xl font-bold pt-3 pb-5">Your colab pages</p>
+            {colabPage && colabPage ? (
+              <div className="w-full divide-y gap-1 flex flex-col">
+                {colabPage.map((i, index) => (
+                  <div key={index}>
+                    {' '}
+                    <Page
+                      setPageId={setPageId}
+                      name={i?.name}
+                      pId={i?._id}
+                      isColab={true}
+                      removePage={null}
+                      setIsColab={setIsColab}
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xl font-bold ">Don't have colab pages yet</p>
+            )}
           </div>
+          {/** Editor component */}
+          <div className="w-5/7 h-full col-span-12 rounded border border-gray-500 bg-gray-200 sm:col-span-8">
+            {pageId ? (
+              <Editor isColab={isColabPage} pageId={pageId} />
+            ) : (
+              <div className="flex flex-col align-middle justify-center">
+                <p className="text-center font-semibold">Click 1 page for editing</p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+      {/** ask ai pop up */}
+      <div className="fixed right-12 bottom-10">
+        <div className="">
+          <GoHubot
+            onClick={handleOpen}
+            size={50}
+            className="p-2 rounded-full border border-solid border-black cursor-pointer bg-white"
+          />
         </div>
       </div>
     </div>
