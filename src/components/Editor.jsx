@@ -82,6 +82,7 @@ const Editor = ({ pageId, isColab }) => {
       editorRef.current.editor.format('color', value);
 
       const content = editorRef.current.editor.getContents();
+      setFlag(true);
       console.log('content with color', content);
     });
 
@@ -92,18 +93,16 @@ const Editor = ({ pageId, isColab }) => {
     };
   }, [pageId]);
 
-  /** update content */
-  const updatePageContent = useCallback(
-    (flag) => {
-      if (flag === true) {
-        setTimeout(() => {
-          const content = editorRef.current.editor.getContents();
-          socketRef.current.emit(ACTIONS.SAVE_TEXT, { content, pageId });
-        });
-      }
-    },
-    [flag]
-  );
+  useEffect(() => {
+    /** update page content */
+    if (flag === true) {
+      setTimeout(() => {
+        const content = editorRef.current.editor.getContents();
+        console.log('update', content);
+        socketRef.current.emit(ACTIONS.SAVE_TEXT, { content, pageId });
+      });
+    }
+  }, [flag]);
 
   /** init socket - change correspond to pageId*/
   useEffect(() => {
@@ -237,9 +236,7 @@ const Editor = ({ pageId, isColab }) => {
       return;
     }
     if (source === 'user') {
-      setFlag(true)
-      console.log('flagging', flag);
-      updatePageContent(flag)
+      setFlag(!flag);
       const requestData = encryptHelper({
         roomId: pageId,
         content: delta,
