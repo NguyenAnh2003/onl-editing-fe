@@ -56,6 +56,8 @@ const Editor = ({ pageId, isColab }) => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  /** flag */
+  const [flag, setFlag] = useState(false);
 
   /** validate editor -> disable */
   useEffect(() => {
@@ -89,6 +91,19 @@ const Editor = ({ pageId, isColab }) => {
       editorRef.current.editor.enable(true);
     };
   }, [pageId]);
+
+  /** update content */
+  const updatePageContent = useCallback(
+    (flag) => {
+      if (flag === true) {
+        setTimeout(() => {
+          const content = editorRef.current.editor.getContents();
+          socketRef.current.emit(ACTIONS.SAVE_TEXT, { content, pageId });
+        });
+      }
+    },
+    [flag]
+  );
 
   /** init socket - change correspond to pageId*/
   useEffect(() => {
@@ -222,6 +237,9 @@ const Editor = ({ pageId, isColab }) => {
       return;
     }
     if (source === 'user') {
+      setFlag(true)
+      console.log('flagging', flag);
+      updatePageContent(flag)
       const requestData = encryptHelper({
         roomId: pageId,
         content: delta,
