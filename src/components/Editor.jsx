@@ -56,6 +56,8 @@ const Editor = ({ pageId, isColab }) => {
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  /** flag */
+  const [flag, setFlag] = useState(false);
 
   /** validate editor -> disable */
   useEffect(() => {
@@ -71,10 +73,48 @@ const Editor = ({ pageId, isColab }) => {
     };
     /** function call */
     editorValidate();
+
+    const toolbar = editorRef.current.editor.getModule('toolbar');
+
+    /** custom color */
+    toolbar.addHandler('color', (value) => {
+      console.log('color', value);
+      editorRef.current.editor.format('color', value);
+
+      const content = editorRef.current.editor.getContents();
+      setFlag(!flag);
+      console.log('content with color', content);
+    });
+
+    toolbar.addHandler('align', (value) => {
+      /** get selection */
+      const selection = editorRef.current.editor.getSelection(); //
+      if (selection) {
+        // const selectedText = editorRef.current.editor.getText(selection.index, selection.length);
+        console.log('align', value);
+        editorRef.current.editor.formatLine(selection.index, selection.length, 'align', value);
+        setFlag(!flag);
+      }
+    });
+
+    /** custom align */
+
     return () => {
-      editorRef.current.editor.enable();
+      editorRef.current.editor.enable(true);
     };
   }, [pageId]);
+
+  useEffect(() => {
+    /** update page content */
+    if (flag === true) {
+      setTimeout(() => {
+        const content = editorRef.current.editor.getContents();
+        console.log('update', content);
+        socketRef.current.emit(ACTIONS.SAVE_TEXT, { content, pageId });
+        setFlag(!flag);
+      });
+    }
+  }, [flag]);
 
   /** init socket - change correspond to pageId*/
   useEffect(() => {
@@ -208,6 +248,7 @@ const Editor = ({ pageId, isColab }) => {
       return;
     }
     if (source === 'user') {
+      setFlag(!flag);
       const requestData = encryptHelper({
         roomId: pageId,
         content: delta,
