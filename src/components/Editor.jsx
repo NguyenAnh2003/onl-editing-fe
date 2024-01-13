@@ -86,6 +86,17 @@ const Editor = ({ pageId, isColab }) => {
       console.log('content with color', content);
     });
 
+    toolbar.addHandler('align', (value) => {
+      /** get selection */
+      const selection = editorRef.current.editor.getSelection(); //
+      if (selection) {
+        // const selectedText = editorRef.current.editor.getText(selection.index, selection.length);
+        console.log('align', value);
+        editorRef.current.editor.formatLine(selection.index, selection.length, 'align', value);
+        setFlag(!flag);
+      }
+    });
+
     /** custom align */
 
     return () => {
