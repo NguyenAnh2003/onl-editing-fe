@@ -71,8 +71,22 @@ const Editor = ({ pageId, isColab }) => {
     };
     /** function call */
     editorValidate();
+
+    const toolbar = editorRef.current.editor.getModule('toolbar');
+
+    /** custom color */
+    toolbar.addHandler('color', (value) => {
+      console.log('color', value);
+      editorRef.current.editor.format('color', value);
+
+      const content = editorRef.current.editor.getContents();
+      console.log('content with color', content);
+    });
+
+    /** custom align */
+
     return () => {
-      editorRef.current.editor.enable();
+      editorRef.current.editor.enable(true);
     };
   }, [pageId]);
 
