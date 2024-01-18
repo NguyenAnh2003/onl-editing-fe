@@ -15,7 +15,7 @@ const Input = forwardRef((props, ref) => {
       type={type}
       placeholder={placeholder}
       ref={ref}
-      className="block border border-grey-light w-full p-3 rounded mb-4"
+      className="block border border-grey-light w-full p-3 rounded mb-4 outline-none"
     />
   );
 });

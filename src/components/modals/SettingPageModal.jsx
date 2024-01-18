@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Backdrop, Box, Fade, Modal, Typography } from '@mui/material';
 import { Toaster, toast } from 'react-hot-toast';
-import { getColabsByPageId, getDataByPageId } from '../../libs/page.api';
+import { CiEdit } from 'react-icons/ci';
+import { getColabsByPageId, getDataByPageId, updatePageName } from '../../libs/page.api';
 import ColabUserCard from '../cards/ColabUserCard';
 
 const style = {
@@ -21,6 +22,18 @@ const style = {
 const SettingPageModal = ({ open, handleClose, pageId }) => {
   const [pageData, setPageData] = useState({});
   const [colabUsers, setColabUsers] = useState([]);
+  const [edit, setEdit] = useState(false);
+  const nameRef = useRef(null);
+
+  const editMode = {};
+  const viewMode = {};
+
+  if (edit) {
+    viewMode.display = 'none';
+  } else {
+    editMode.display = 'none';
+  }
+
   /** fetching colab records */
   useEffect(() => {
     const fetchData = async () => {
@@ -35,6 +48,17 @@ const SettingPageModal = ({ open, handleClose, pageId }) => {
     };
     fetchData();
   }, []);
+
+  /** update handler */
+  const updateHandler = async () => {
+    try {
+      const { data, status } = await updatePageName(pageId, nameRef.current.value);
+      if (status === 200) toast.success(data);
+    } catch (error) {
+      console.error(error);
+      toast.error('Cannot update name');
+    }
+  };
 
   return (
     <div>
@@ -55,9 +79,25 @@ const SettingPageModal = ({ open, handleClose, pageId }) => {
       >
         <Fade in={open}>
           <Box sx={style}>
-            <Typography id="transition-modal-title" variant="h6" component="h3">
+            <Typography
+              id="transition-modal-title"
+              variant="h6"
+              component="h3"
+              style={viewMode}
+              className="flex flex-row items-center gap-4"
+            >
               {pageData.name}
+              <CiEdit className="cursor-pointer" onClick={() => setEdit(!edit)} />
             </Typography>
+            {/** input */}
+            <div style={editMode} className="flex flex-row items-center gap-2">
+              <input
+                className="block border border-grey-light p-1 rounded mb-4 outline-none"
+                style={editMode}
+                ref={nameRef}
+              />
+              <CiEdit className="cursor-pointer" onClick={updateHandler} />
+            </div>
             <div className="h-full w-full flex flex-col gap-3">
               {/** colab users */}
               {colabUsers.map((i, index) => (

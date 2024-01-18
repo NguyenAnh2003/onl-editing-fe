@@ -50,6 +50,12 @@ export const deletePage = (pageId) => {
   return res;
 };
 
+/** update page name */
+export const updatePageName = (pageId, name) => {
+  const res = putHTTP(`/update-page-name/${pageId}`, { name });
+  return res;
+};
+
 /** delete from colab */
 export const deleteUserColab = (colabId) => {
   const res = deleteHTTP(`/delete-user-colab/${colabId}`);
