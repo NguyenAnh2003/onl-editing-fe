@@ -50,6 +50,12 @@ export const deletePage = (pageId) => {
   return res;
 };
 
+/** delete from colab */
+export const deleteUserColab = (colabId) => {
+  const res = deleteHTTP(`/delete-user-colab/${colabId}`);
+  return res;
+};
+
 /** add user to page */
 export const addUserToPage = (userId, pageId, username) => {
   const res = postHTTP('/add-user-to-page', { userId, pageId, username });
@@ -58,9 +64,9 @@ export const addUserToPage = (userId, pageId, username) => {
 
 /** update user mode in colab */
 export const updateUserMode = (colabId, userId, pageId, mode, username) => {
-  /** specific colabId 
+  /** specific colabId
    * body userId, pageId, mode, username
-  */
+   */
   const res = putHTTP(`/update-user-mode/${colabId}`, { userId, pageId, mode, username });
   return res;
 };

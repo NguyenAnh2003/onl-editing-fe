@@ -5,6 +5,7 @@ import ACTIONS from '../actions';
 import { Toaster } from 'react-hot-toast';
 import { toast } from 'react-hot-toast';
 import Message from './Message';
+import { IoMdSend } from 'react-icons/io';
 import { decryptHelper, encryptHelper } from '../libs/utils';
 
 const style = {
@@ -64,7 +65,7 @@ const ChatPanel = ({ open, handleClose }) => {
         role: 'user',
         sessionId: socket.current.id,
       };
-      
+
       const requestData = encryptHelper(messageSending);
 
       setListMess((prev) => [...prev, messageSending]);
@@ -75,6 +76,26 @@ const ChatPanel = ({ open, handleClose }) => {
       /** remove */
       message.current.value = '';
     }
+  };
+
+  /** send button handler */
+  const sendMessageHandler = () => {
+    /** set current message */
+    const messageSending = {
+      content: message.current.value,
+      role: 'user',
+      sessionId: socket.current.id,
+    };
+
+    const requestData = encryptHelper(messageSending);
+
+    setListMess((prev) => [...prev, messageSending]);
+    /** socket emit */
+    socket.current.emit(ACTIONS.SEND_MESSAGE, {
+      requestData,
+    });
+    /** remove */
+    message.current.value = '';
   };
 
   return (
@@ -109,13 +130,21 @@ const ChatPanel = ({ open, handleClose }) => {
                 ))}
               </div>
             </div>
-            {/** input */}
-            <input
-              ref={message}
-              onKeyDown={keyPressHandler}
-              className="absolute bottom-8 pt-2 pb-2 pl-1 w-[332px]"
-              placeholder="Enter message"
-            />
+            <div className="w-[332px] flex flex-row">
+              {/** input */}
+              <input
+                ref={message}
+                onKeyDown={keyPressHandler}
+                className="absolute bottom-8 pt-2 w-[300px] pb-2 pl-1  outline-none"
+                placeholder="Enter message"
+              />
+              {/** button */}
+              <IoMdSend
+                size={20}
+                className="absolute bottom-11 right-10 cursor-pointer"
+                onClick={sendMessageHandler}
+              />
+            </div>
           </Box>
         </Fade>
       </Modal>

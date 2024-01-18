@@ -66,6 +66,7 @@ const SettingPageModal = ({ open, handleClose, pageId }) => {
                   colabId={i._id} // colabId -> _id
                   userId={i.userId}
                   username={i.username}
+                  setColabUsers={setColabUsers}
                   mode={i.mode}
                   pageId={pageId}
                 />
