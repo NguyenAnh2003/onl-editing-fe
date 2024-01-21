@@ -16,7 +16,7 @@ import { IoIosSettings } from 'react-icons/io';
 import { saveAs } from 'file-saver';
 /** Cursor */
 import QuillCursors from 'quill-cursors';
-import { exportPDF, getOneColabPage, searchUser } from '../libs';
+import { exportPDF, getDataByPageId, getOneColabPage, searchUser } from '../libs';
 /** Toaster */
 import { Toaster } from 'react-hot-toast';
 import { toast } from 'react-hot-toast';
@@ -150,16 +150,6 @@ const Editor = ({ pageId, isColab }) => {
         setGroup(clients);
       });
 
-      /** load page */
-      socketRef.current.on(ACTIONS.LOAD_DOC, ({ responseData }) => {
-        const { name, content } = decryptHelper(responseData);
-        setPageData({ name, content });
-        console.log(decryptHelper(responseData));
-        if (content) {
-          setPageContent(content);
-        }
-      });
-
       /** onTextChange */
       socketRef.current.on(ACTIONS.TEXT_CHANGE, ({ responseData }) => {
         const { content, client: senderClient } = decryptHelper(responseData);
@@ -188,8 +178,21 @@ const Editor = ({ pageId, isColab }) => {
         cursorRef.current.removeCursor(socketId);
       });
     };
+
+    /** REST for load page data */
+    const fetchDataa = async () => {
+      const { data, status } = await getDataByPageId(pageId);
+      if (status === 200) {
+        setPageData({ name: data.name });
+        console.log({ name: data.name });
+        setPageContent(data.content);
+      }
+    };
+
     /** function call init */
     onConnection();
+    /** REST */
+    fetchDataa();
 
     /** remove state */
     return () => {
@@ -237,7 +240,7 @@ const Editor = ({ pageId, isColab }) => {
     (content) => {
       editorRef.current?.editor.setContents(content);
     },
-    [pageId, pageData, editorRef]
+    [pageId]
   );
 
   /** OnTextChange */
